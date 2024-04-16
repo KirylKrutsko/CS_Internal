@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<androidx.constraintlayout.widget.ConstraintLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:tools="http://schemas.android.com/tools"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        tools:context=".FilmActivity" android:background="@drawable/add_screen_background">
+
+    <ImageButton
+            android:backgroundTint="@android:color/transparent"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" app:srcCompat="@drawable/outline_arrow_back_24"
+            android:id="@+id/backButton"
+            app:layout_constraintTop_toTopOf="parent" app:layout_constraintStart_toStartOf="parent"
+            android:layout_marginTop="25dp" android:layout_marginStart="20dp"/>
+    <EditText
+            android:hint="Title"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content" android:id="@+id/filmTitle"
+            android:backgroundTint="@android:color/transparent"
+            app:layout_constraintTop_toTopOf="parent"
+            android:layout_marginTop="20dp" android:textSize="30sp"
+            app:layout_constraintStart_toEndOf="@+id/backButton" android:layout_marginStart="10dp"
+            app:layout_constraintEnd_toStartOf="@+id/optionsButton" android:layout_marginEnd="10dp"/>
+    <ImageButton
+            android:layout_width="60dp"
+            android:layout_height="60dp" app:srcCompat="@drawable/baseline_more_vert_24"
+            android:id="@+id/optionsButton"
+            android:backgroundTint="@android:color/transparent"
+            app:layout_constraintTop_toTopOf="parent" app:layout_constraintEnd_toEndOf="parent"
+            android:layout_marginTop="20dp" android:layout_marginEnd="20dp" android:scaleType="fitCenter"/>
+    <ImageView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:minHeight="40dp"
+            app:srcCompat="@drawable/outline_image_24"
+            android:id="@+id/imageView"
+            app:layout_constraintTop_toBottomOf="@+id/filmTitle"
+            app:layout_constraintStart_toStartOf="@+id/backButton" app:layout_constraintEnd_toStartOf="@+id/guideline"
+            android:layout_marginTop="10dp" android:layout_marginEnd="5dp" android:scaleType="fitCenter"/>
+
+    <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/guideline"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            app:layout_constraintGuide_begin="206dp"/>
+    <EditText
+            android:hint="Rating"
+            android:inputType="number"
+            android:backgroundTint="@android:color/transparent"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" android:id="@+id/filmRating"
+            app:layout_constraintEnd_toEndOf="@+id/optionsButton" app:layout_constraintTop_toBottomOf="@+id/filmTitle"
+            android:layout_marginTop="10dp" app:layout_constraintStart_toStartOf="@+id/guideline"
+            app:layout_constraintHorizontal_bias="1.0"/>
+    <EditText
+            android:hint="Desciption..."
+            android:backgroundTint="@android:color/transparent"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content" android:id="@+id/filmDescription"
+            app:layout_constraintEnd_toEndOf="@+id/filmRating"
+            app:layout_constraintTop_toBottomOf="@+id/filmRating" android:layout_marginTop="10dp"
+            app:layout_constraintStart_toStartOf="@+id/guideline" android:layout_marginStart="5dp"/>
+    <ImageButton
+            android:backgroundTint="@android:color/transparent"
+            android:layout_width="60dp"
+            android:layout_height="60dp" app:srcCompat="@drawable/baseline_task_alt_24"
+            android:id="@+id/saveButton"
+            app:layout_constraintEnd_toEndOf="parent" app:layout_constraintBottom_toBottomOf="parent"
+            android:layout_marginBottom="20dp" android:layout_marginEnd="20dp" android:visibility="gone"
+            android:scaleType="fitCenter"/>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+            android:id="@+id/action_watch_later"
+            android:title="Move to \'watch later\' folder"/>
+    <item
+            android:id="@+id/action_watching_now"
+            android:title="Move to \'watching now\' folder"/>
+    <item
+            android:id="@+id/action_watched"
+            android:title="Move to \'watched\' folder"/>
+</menu>

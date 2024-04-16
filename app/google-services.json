@@ -1,0 +1,30 @@
+{
+  "project_info": {
+    "project_number": "287118001816",
+    "firebase_url": "https://kiryl-cs-internal-default-rtdb.europe-west1.firebasedatabase.app",
+    "project_id": "kiryl-cs-internal",
+    "storage_bucket": "kiryl-cs-internal.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:287118001816:android:899fe8d3f89599a35c32ed",
+        "android_client_info": {
+          "package_name": "com.example.cs_internal"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAXxwWMOrPg6MKh8fu7ILNTuiPOp45gxHM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

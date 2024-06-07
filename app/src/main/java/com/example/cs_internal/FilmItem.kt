@@ -2,15 +2,21 @@ package com.example.cs_internal
 
 import android.content.Context
 import android.graphics.Bitmap
+import android.graphics.Color
 import android.graphics.drawable.Drawable
+import android.health.connect.datatypes.units.Length
 import android.net.Uri
-import android.widget.Adapter
+import android.text.Spannable
+import android.text.SpannableString
+import android.text.style.BackgroundColorSpan
+import android.view.View.GONE
+import android.view.View.VISIBLE
+import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.Toast
 import com.google.firebase.database.*
 import com.google.firebase.storage.StorageReference
 import com.squareup.picasso.Picasso
-import org.xml.sax.DTDHandler
 import java.io.ByteArrayOutputStream
 import java.io.File
 import java.io.Serializable
@@ -18,28 +24,51 @@ import java.util.*
 import kotlin.collections.HashMap
 
 class FilmItem(
-    private var title: String,
-    private var description: String,
-    private var rating: String,
+    titleString : String,
     private var type: Int,
-    private var imageLink : String,
     private var databaseRef : String
 ) : Serializable {
-//    var impression : String? = null
-//    var mark : Int? = null
+    private var title = SpannableString(titleString)
+    private var description : SpannableString? = null
+    private var rating: String? = null
+    private var imageLink : String? = null
+    private var mark : Int? = null
+    private var commentary : SpannableString? = null
+    private var tags : MutableList<String> = mutableListOf()
+    private var link : String? = null
+//    private var comments : MutableList<String> = mutableListOf()
 
-    constructor(title: String, description: String, rating: String, type: Int, imageLink: String, databaseUserRef: DatabaseReference, listener: DatabaseSyncListener) : this(title, description, rating, type, imageLink, "") {
+    constructor(title: String, type: Int, databaseUserRef: DatabaseReference, listener: DatabaseSyncListener) : this(title, type, "") {
         addFilmToDatabase(databaseUserRef, listener)
+    }
+    constructor(title: String, type: Int, databaseRef : String, description : String?, rating : String?, commentary: String?, imageLink : String?, link : String?) : this(title, type, databaseRef){
+        if(description != null){
+            this.description = SpannableString(description)
+        }
+        if(commentary != null){
+            this.commentary = SpannableString(commentary)
+        }
+        this.rating = rating
+        this.imageLink = imageLink
+        this.link = link
     }
 
     private fun toHashMap() : HashMap<String, *>{
         return hashMapOf(
-            "title" to title,
-            "desc" to description,
+            "title" to title.toString(),
+            "type" to type,
+            "desc" to description?.toString(),
+            "commentary" to commentary?.toString(),
             "rating" to rating,
-            "imageLink" to imageLink,
-            "type" to type
+            "imageLink" to imageLink
         )
+    }
+    private fun tagsToHashMap() : HashMap<String, *>{
+        val hashMap : HashMap<String, String> = hashMapOf()
+        for(i in tags.indices){
+            hashMap[i.toString()] = tags[i]
+        }
+        return hashMap
     }
 
     private fun addFilmToDatabase(databaseUserRef : DatabaseReference, listener: DatabaseSyncListener){
@@ -77,15 +106,17 @@ class FilmItem(
         })
     }
 
-    fun deleteImage(imageView: ImageView, databaseUserRef: DatabaseReference, storageUserRef: StorageReference, context: Context, listener: DatabaseSyncListener){
+    fun deleteImage(imageView: ImageView, listPosition : Int, databaseUserRef: DatabaseReference, storageUserRef: StorageReference, context: Context, listener: DatabaseSyncListener){
         deleteImageFromStorage(storageUserRef, object : DatabaseSyncListener{
             override fun onSuccess() {
-                databaseUserRef.child("$databaseRef/imageLink").setValue("").addOnSuccessListener {
-                    this@FilmItem.imageLink = ""
+                databaseUserRef.child("$databaseRef/imageLink").removeValue().addOnSuccessListener {
+                    this@FilmItem.imageLink = null
                     val editor = context.getSharedPreferences("FilmImages", Context.MODE_PRIVATE).edit()
                     editor.remove(databaseRef)
                     editor.apply()
                     imageView.setImageResource(R.drawable.outline_image_24)
+                    imageView.visibility = GONE
+                    DataSingleton.adapters[type].notifyItemChanged(listPosition)
                     listener.onSuccess()
                 }.addOnFailureListener{
                     listener.onFailure(Exception("Database setValue request rejected"))
@@ -115,19 +146,20 @@ class FilmItem(
                         deleteImageFromStorage(storageUserRef, object : DatabaseSyncListener{
                             override fun onSuccess() {
                                 databaseUserRef.child("$databaseRef/imageLink")
-                                    .setValue(imageRef.name).addOnSuccessListener {
+                                    .setValue(imageRef.name)
+                                    .addOnSuccessListener {
                                         imageLink = imageRef.name
                                         downloadAndLoadImageFromStorage(imageView, storageUserRef, context, listener)
-                                    }.addOnFailureListener(){
-                                        listener.onFailure(Exception("Database setValue request rejected"))
+                                    }.addOnFailureListener(){ ex->
+                                        listener.onFailure(ex)
                                     }
                             }
                             override fun onFailure(exception: Exception) {
                                 listener.onFailure(exception)
                             }
                         })
-                    }.addOnFailureListener {
-                        listener.onFailure(Exception("Storage putBytes request rejected"))
+                    }.addOnFailureListener { ex->
+                        listener.onFailure(ex)
                     }
                 }
             }
@@ -138,7 +170,7 @@ class FilmItem(
         })
     }
 
-    private fun compressImage(context: Context, bitmap: Bitmap) : ByteArray{
+    private fun compressImage(context: Context, bitmap: Bitmap) : ByteArray {
         val toReturn = ByteArrayOutputStream()
         val k = maxOf(bitmap.width.toFloat(), bitmap.height.toFloat()) / 1024
         if(k>1){
@@ -153,7 +185,7 @@ class FilmItem(
     }
 
     private fun deleteImageFromStorage(storageUserRef: StorageReference, listener: DatabaseSyncListener){
-        if(imageLink !=""){
+        if(hasImage()){
             storageUserRef.child("film_images/$imageLink").delete().addOnSuccessListener {
                 listener.onSuccess()
             }.addOnFailureListener {
@@ -165,7 +197,7 @@ class FilmItem(
     }
 
     private fun downloadAndLoadImageFromStorage(imageView: ImageView, storageUserRef: StorageReference, context: Context, listener: DatabaseSyncListener){
-        if(imageLink.isNotEmpty()){
+        if(hasImage()){
             val imageRef = storageUserRef.child("film_images/$imageLink")
             val file = File(context.cacheDir, databaseRef)
             imageRef.getFile(file)
@@ -191,6 +223,7 @@ class FilmItem(
 
     fun changeType(toMove : Int, databaseUserRef: DatabaseReference, listener: DatabaseSyncListener){
             databaseUserRef.child("$databaseRef/type").setValue(toMove).addOnSuccessListener {
+                databaseUserRef.child("$databaseRef/lastEditTime").setValue(System.currentTimeMillis())
                 type = toMove
                 listener.onSuccess()
             }.addOnFailureListener{
@@ -199,7 +232,7 @@ class FilmItem(
     }
 
     fun loadImageIfExists(imageView : ImageView, context: Context, storageUserRef: StorageReference, listener: DatabaseSyncListener){
-        if(imageLink.isNotEmpty()){
+        if(hasImage()){
             if(loadImageLocally(imageView, context)){
                 listener.onSuccess()
             }
@@ -217,30 +250,29 @@ class FilmItem(
         val savedImageUriString = sharedPreferences.getString(databaseRef, null)
         if (savedImageUriString != null) {
             val savedImageUri = Uri.parse(savedImageUriString)
-            Toast.makeText(context, savedImageUri.toString(), Toast.LENGTH_SHORT).show()
-//                            imageView.setImageURI(savedImageUri)
+//            Toast.makeText(context, savedImageUri.toString(), Toast.LENGTH_SHORT).show()
+//            imageView.setImageURI(savedImageUri)
             Picasso.get().invalidate(savedImageUri)
             Picasso.get().load(savedImageUri).into(imageView)
+            val layoutParams = imageView.layoutParams
+            layoutParams.height = ViewGroup.LayoutParams.WRAP_CONTENT
+            imageView.layoutParams = layoutParams
+            imageView.visibility = VISIBLE
             return true
         }
         return false
     }
 
-    fun changeData(enteredTitle : String, enteredDesc : String, enteredRating : String, databaseUserRef: DatabaseReference, listener: DatabaseSyncListener){
+    fun saveDataChange(databaseUserRef: DatabaseReference, listener: DatabaseSyncListener){
         databaseUserRef.child(databaseRef).runTransaction(object : Transaction.Handler{
             override fun doTransaction(currentData: MutableData): Transaction.Result {
-                if(enteredTitle!=title){
-                    title = enteredTitle
-                    currentData.child("title").value = enteredTitle
-                }
-                if(enteredDesc!=description){
-                    description = enteredDesc
-                    currentData.child("desc").value = enteredDesc
-                }
-                if(enteredRating!=rating){
-                    rating = enteredRating
-                    currentData.child("rating").value = enteredRating
-                }
+                currentData.child("title").value = title.toString()
+                currentData.child("desc").value = description?.toString()
+                currentData.child("rating").value = rating
+                currentData.child("commentary").value = commentary?.toString()
+                currentData.child("tags").value = tagsToHashMap()
+                currentData.child("link").value = link
+                currentData.child("lastEditTime").value = System.currentTimeMillis()
                 return Transaction.success(currentData)
             }
             override fun onComplete(error: DatabaseError?, committed: Boolean, currentData: DataSnapshot?) {
@@ -255,16 +287,113 @@ class FilmItem(
         })
     }
 
-    fun getTitle() : String{
+    private fun addTagsToDatabase(databaseUserRef: DatabaseReference, listener: DatabaseSyncListener){
+        databaseUserRef.child("$databaseRef/tags").setValue(tagsToHashMap()).addOnSuccessListener {
+            listener.onSuccess()
+        }.addOnFailureListener(){ ex->
+            listener.onFailure(ex)
+        }
+    }
+
+    private fun search(target : String?, toSearch : SpannableString?) : Int {
+        if(toSearch != null){
+            val index = toSearch.toString().trim().lowercase().indexOf(target.orEmpty().trim().lowercase())
+            return index
+        }
+        return -1
+    }
+
+    fun searchAndSpan(query : String?) : FilmItem? {
+        var found  = false
+        val titleIndex = search(query, title)
+        val descIndex = search(query, description)
+        val commIndex = search(query, commentary)
+        if(titleIndex != -1 || descIndex != -1 || commIndex != -1){
+            return copyAndSpan(titleIndex, descIndex, commIndex, query.orEmpty().length)
+        }
+        return null
+    }
+
+    fun hasImage() : Boolean{
+        return imageLink!=null
+    }
+    fun getTitle() : SpannableString {
         return title
     }
-    fun getDescription() : String{
+    fun getDescription() : SpannableString? {
         return description
     }
-    fun getRating() : String{
+    fun getRating() : String? {
         return rating
+    }
+    fun getCommentary() : SpannableString?{
+        return commentary
+    }
+    fun getMark() : Int?{
+        return mark
     }
     fun getDatabaseRef() : String{
         return databaseRef
+    }
+    fun getTags() : MutableList<String>{
+        return tags
+    }
+    fun getLink() : String?{
+        return link
+    }
+    fun setTitle(title : String){
+        this.title = SpannableString(title.trim())
+    }
+    fun setDescription(description: String?){
+        val short = description.orEmpty().trim()
+        if(short == "") this.description = null
+        else this.description = SpannableString(short)
+    }
+    fun setRating(rating: String?){
+        val short = rating.orEmpty().trim()
+        if(short == "") this.rating = null
+        else this.rating = short
+    }
+    fun setCommentary(commentary : String?){
+        val short = commentary.orEmpty().trim()
+        if(short == "") this.commentary = null
+        else this.commentary = SpannableString(short)
+    }
+    fun setMark(mark : Int?){
+        this.mark = mark
+    }
+    fun addTag(name : String){
+        if(name != "") tags.add(name.trim())
+    }
+    fun deleteAllTags(){
+        tags.clear()
+    }
+    fun setLink(new : String?){
+        val short = new.orEmpty().trim()
+        if(short == "") this.link = null
+        else this.link = short
+    }
+
+    private constructor(
+        title: String, type: Int,
+        databaseRef : String,
+        description : String?,
+        rating: String?,
+        imageLink : String?,
+        mark : Int?,
+        commentary : String?,
+        tags : MutableList<String>,
+        link : String?
+    ) : this(title, type, databaseRef, description, rating, commentary, imageLink, link)
+    {
+        this.mark = mark
+        this.tags = tags
+    }
+    private fun copyAndSpan(titleIndex : Int, descIndex : Int, commIndex : Int, length: Int) : FilmItem {
+        val newItem = FilmItem(title.toString(), type, databaseRef, description?.toString(), rating, imageLink, mark, commentary?.toString(), tags, link)
+        if(titleIndex!=-1) newItem.title.setSpan(BackgroundColorSpan(Color.YELLOW), titleIndex, titleIndex + length, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
+        if(descIndex!=-1) newItem.description?.setSpan(BackgroundColorSpan(Color.YELLOW), descIndex, descIndex + length, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
+        if(commIndex!=-1) newItem.commentary?.setSpan(BackgroundColorSpan(Color.YELLOW), commIndex, commIndex + length, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
+        return newItem
     }
 }

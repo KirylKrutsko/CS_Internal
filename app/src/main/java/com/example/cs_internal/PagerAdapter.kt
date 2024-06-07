@@ -5,13 +5,14 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.FragmentPagerAdapter
 import com.google.firebase.database.DatabaseReference
+import com.google.firebase.storage.StorageReference
 
-class PagerAdapter(fm: FragmentManager, ref : DatabaseReference, context : Context) : FragmentPagerAdapter(fm, BEHAVIOR_RESUME_ONLY_CURRENT_FRAGMENT) {
+class PagerAdapter(fm: FragmentManager, databaseUserRef : DatabaseReference, storageUserRef: StorageReference, context : Context) : FragmentPagerAdapter(fm, BEHAVIOR_RESUME_ONLY_CURRENT_FRAGMENT) {
 
     private val fragments : List<PageFragment> = listOf(
-        PageFragment(ref, context, 0),
-        PageFragment(ref, context, 1),
-        PageFragment(ref, context, 2)
+        PageFragment(databaseUserRef, storageUserRef, context, 0),
+        PageFragment(databaseUserRef, storageUserRef, context, 1),
+        PageFragment(databaseUserRef, storageUserRef, context, 2)
     )
 
     override fun getItem(position: Int): Fragment {

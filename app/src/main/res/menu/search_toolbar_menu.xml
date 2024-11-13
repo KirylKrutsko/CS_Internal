@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+      xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <item android:id="@+id/action_search"
+          android:title="Search"
+          android:icon="@drawable/baseline_search_24"
+          app:showAsAction="ifRoom|collapseActionView"
+          app:actionViewClass="androidx.appcompat.widget.SearchView" />
+    <item android:id="@+id/action_tag_sort" android:title="Sort by tag"
+          android:icon="@drawable/bookmark_fill_svgrepo_com"
+          app:showAsAction="ifRoom|collapseActionView"/>
+    <item android:id="@+id/order_by"
+          android:title="Order by ..."
+          app:showAsAction="never" />
+    <item  android:id="@+id/action_database_search" android:title="Search in database" app:showAsAction="never"/>
+</menu>

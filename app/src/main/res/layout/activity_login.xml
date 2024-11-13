@@ -36,7 +36,8 @@
             android:layout_height="34dp" app:srcCompat="@drawable/outline_remove_red_eye_24"
             android:id="@+id/seePasswordButton"
             android:background="@android:color/transparent" app:layout_constraintEnd_toEndOf="@+id/editPasswordText"
-            app:layout_constraintTop_toTopOf="@+id/editPasswordText" android:layout_marginTop="4dp"/>
+            app:layout_constraintTop_toTopOf="@+id/editPasswordText" android:layout_marginTop="4dp"
+            android:tint="#FFFFFF"/>
     <EditText
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"

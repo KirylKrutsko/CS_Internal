@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.appcompat.widget.LinearLayoutCompat xmlns:android="http://schemas.android.com/apk/res/android"
+              xmlns:app="http://schemas.android.com/apk/res-auto" android:orientation="horizontal"
+              android:layout_width="wrap_content"
+              android:layout_height="wrap_content" >
+
+    <ImageButton
+            android:layout_width="wrap_content" android:backgroundTint="@android:color/transparent"
+            android:layout_height="wrap_content" app:srcCompat="@drawable/emoji_1_svgrepo_com"
+            android:id="@+id/mark1" android:layout_weight="1" android:layout_margin="5dp"/>
+    <ImageButton
+            android:layout_width="wrap_content" android:backgroundTint="@android:color/transparent"
+            android:layout_height="wrap_content" app:srcCompat="@drawable/emoji_2_svgrepo_com"
+            android:id="@+id/mark2" android:layout_weight="1" android:layout_margin="5dp"/>
+    <ImageButton
+            android:layout_width="wrap_content" android:backgroundTint="@android:color/transparent"
+            android:layout_height="wrap_content" app:srcCompat="@drawable/emoji_3_svgrepo_com"
+            android:id="@+id/mark3" android:layout_weight="1" android:layout_margin="5dp"/>
+    <ImageButton
+            android:layout_width="wrap_content" android:backgroundTint="@android:color/transparent"
+            android:layout_height="wrap_content" app:srcCompat="@drawable/emoji_4_svgrepo_com"
+            android:id="@+id/mark4" android:layout_weight="1" android:layout_margin="5dp"/>
+    <ImageButton
+            android:layout_width="wrap_content" android:backgroundTint="@android:color/transparent"
+            android:layout_height="wrap_content" app:srcCompat="@drawable/emoji_5_svgrepo_com"
+            android:id="@+id/mark5" android:layout_weight="1" android:layout_margin="5dp"/>
+</androidx.appcompat.widget.LinearLayoutCompat>

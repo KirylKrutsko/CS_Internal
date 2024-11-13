@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android" xmlns:app="http://schemas.android.com/apk/res-auto">
+    <item android:id="@+id/markImage" android:icon="@drawable/emoji_5_svgrepo_com" app:showAsAction="ifRoom"
+          android:title="mark"/>
+    <item
+            android:id="@+id/action_exit" app:showAsAction="never"
+            android:title="Exit without saving"/>
+    <item
+            android:id="@+id/action_changeImage" app:showAsAction="never"
+            android:title="Change image"/>
+    <item
+            android:id="@+id/action_changeType" app:showAsAction="never"
+            android:title="Change type" />
+    <item
+            android:id="@+id/action_deleteImage" app:showAsAction="never"
+            android:title="Delete image"/>
+    <item
+            android:id="@+id/action_delete" app:showAsAction="never"
+            android:title="Delete film"/>
+    <item
+            android:id="@+id/action_export" app:showAsAction="never"
+            android:title="Export" />
+    <item
+            android:id="@+id/action_import" app:showAsAction="never"
+            android:title="Import" />
+</menu>

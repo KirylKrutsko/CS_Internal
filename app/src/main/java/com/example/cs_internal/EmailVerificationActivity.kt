@@ -25,6 +25,7 @@ class EmailVerificationActivity : AppCompatActivity() {
                         Toast.makeText(this, "We have sent you the mail for verification!", Toast.LENGTH_SHORT).show()
                     } else {
                         Toast.makeText(this, "Email sending is failed", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(this, task.exception?.message, Toast.LENGTH_LONG).show()
                     }
                }
 

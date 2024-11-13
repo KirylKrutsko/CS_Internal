@@ -33,8 +33,8 @@ class PagerAdapter(fm: FragmentManager, databaseUserRef : DatabaseReference, sto
     }
 
     fun setAdapters(){
-        DataSingleton.adapters.add(fragments[0].myAdapter)
-        DataSingleton.adapters.add(fragments[1].myAdapter)
-        DataSingleton.adapters.add(fragments[2].myAdapter)
+        DataSingleton.adapters.add(fragments[0].recyclerViewAdapter)
+        DataSingleton.adapters.add(fragments[1].recyclerViewAdapter)
+        DataSingleton.adapters.add(fragments[2].recyclerViewAdapter)
     }
 }

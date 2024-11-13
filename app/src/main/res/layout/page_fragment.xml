@@ -1,7 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-                                                   xmlns:app="http://schemas.android.com/apk/res-auto" xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent"
-                                                   android:layout_height="match_parent" >
+                                                   xmlns:app="http://schemas.android.com/apk/res-auto"
+                                                   xmlns:tools="http://schemas.android.com/tools"
+                                                   android:layout_width="match_parent"
+                                                   android:layout_height="match_parent">
 
     <TextView
             android:text="There is no films here yet..."
@@ -9,15 +11,20 @@
             android:layout_height="wrap_content" android:id="@+id/backgroundMessage"
             app:layout_constraintTop_toTopOf="parent" app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent" android:layout_marginTop="20dp"/>
-    <androidx.recyclerview.widget.RecyclerView
+    <com.example.cs_internal.CustomRecyclerView
             android:id="@+id/list"
             android:name="com.example.cs_internal.ItemFragment"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             app:layoutManager="LinearLayoutManager"
             tools:context=".PageFragment"
-            android:background="@color/white"
+            android:background="@android:color/background_dark"
             tools:listitem="@layout/film_item" android:visibility="visible" app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintStart_toStartOf="parent" app:layout_constraintEnd_toEndOf="parent"
-    />
+            app:layout_constraintStart_toStartOf="parent" app:layout_constraintEnd_toEndOf="parent"/>
+    <ImageButton
+            android:src="@drawable/up_arrow_svgrepo_com" android:scaleType="fitCenter"
+            android:layout_width="50dp" android:backgroundTint="@android:color/transparent"
+            android:layout_height="50dp" android:id="@+id/scrollUpButton"
+            app:layout_constraintBottom_toBottomOf="parent" app:layout_constraintEnd_toEndOf="parent"
+            android:layout_marginEnd="20dp" android:layout_marginBottom="-50dp"/>
 </androidx.constraintlayout.widget.ConstraintLayout>

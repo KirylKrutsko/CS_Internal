@@ -8,58 +8,127 @@
         android:layout_height="match_parent"
         tools:context=".FilmActivity">
 
-    <ImageButton
-            android:backgroundTint="@android:color/transparent"
+    <include layout="@layout/film_item_toolbar" android:id="@+id/toolbar"/>
+
+    <TextView
+            android:text="search results"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content" app:srcCompat="@drawable/outline_arrow_back_24"
-            android:id="@+id/backButton"
-            app:layout_constraintTop_toTopOf="parent" app:layout_constraintStart_toStartOf="parent"
-            android:layout_marginTop="15dp" android:layout_marginStart="15dp"/>
-    <EditText
-            android:hint="Title"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content" android:id="@+id/filmTitle"
-            android:backgroundTint="@android:color/transparent"
-            app:layout_constraintTop_toTopOf="parent"
-            android:layout_marginTop="10dp" android:textSize="30sp"
-            app:layout_constraintStart_toEndOf="@+id/backButton" android:layout_marginStart="10dp"
-            app:layout_constraintEnd_toStartOf="@+id/link" android:layout_marginEnd="5dp"/>
+            android:layout_height="wrap_content" android:id="@+id/searchResultsText"
+            app:layout_constraintTop_toBottomOf="@id/toolbar" app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent" android:textSize="16sp" android:visibility="gone"/>
     <ImageButton
-            android:layout_width="50dp"
-            android:layout_height="50dp" app:srcCompat="@drawable/baseline_more_vert_24"
-            android:id="@+id/optionsButton"
-            android:backgroundTint="@android:color/transparent"
-            app:layout_constraintTop_toTopOf="parent" app:layout_constraintEnd_toEndOf="parent"
-            android:layout_marginTop="15dp" android:layout_marginEnd="15dp" android:scaleType="fitCenter"/>
+            android:layout_width="wrap_content" android:backgroundTint="@android:color/transparent"
+            android:layout_height="0dp" app:srcCompat="@android:drawable/ic_menu_close_clear_cancel"
+            android:id="@+id/closeResultsButton" android:scaleType="fitStart"
+            app:layout_constraintStart_toEndOf="@+id/searchResultsText"
+            app:layout_constraintTop_toTopOf="@+id/searchResultsText" android:layout_marginTop="-8dp"
+            android:padding="0dp" app:layout_constraintBottom_toTopOf="@+id/searchResultsText"
+            android:layout_marginBottom="-8dp" android:visibility="gone"/>
 
-
-    <ImageButton
-            android:layout_width="30dp"
-            android:layout_height="30dp" android:id="@+id/link"
-            android:backgroundTint="@android:color/transparent"
-            android:padding="0dp"
-            app:srcCompat="@drawable/link_svgrepo_com"
-            app:layout_constraintEnd_toStartOf="@+id/optionsButton"
-            app:layout_constraintTop_toTopOf="@+id/optionsButton"
-            app:layout_constraintBottom_toBottomOf="@+id/optionsButton" android:scaleType="fitCenter"
-            android:visibility="gone"/>
     <ScrollView
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            app:layout_constraintTop_toBottomOf="@+id/filmTitle"
+            app:layout_constraintTop_toBottomOf="@+id/searchResultsText"
             android:id="@+id/scrollView" android:focusableInTouchMode="true"
             app:layout_constraintStart_toStartOf="parent" app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintBottom_toBottomOf="parent">
-        <LinearLayout android:layout_width="match_parent" android:layout_height="0dp"
-                      android:orientation="vertical">
+            app:layout_constraintBottom_toBottomOf="parent" android:layout_marginTop="10dp">
+        <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+                      android:paddingBottom="120dp"
+                      android:orientation="vertical" android:id="@+id/mainLinearLayout">
+            <LinearLayout
+                    android:orientation="horizontal" android:id="@+id/playLayout"
+                    android:layout_width="match_parent" android:background="@drawable/main_theme_background"
+                    android:layout_height="match_parent" android:layout_marginStart="10dp"
+                    android:layout_marginEnd="10dp">
+                <ImageButton
+                        android:src="@drawable/play_svgrepo_com"
+                        android:layout_width="35dp" android:backgroundTint="@android:color/transparent"
+                        android:layout_height="35dp" android:id="@+id/playButton" android:layout_weight="0"
+                        android:layout_gravity="center" app:tint="@color/white"
+                        android:scaleType="fitCenter" android:padding="0dp" android:layout_margin="5dp"/>
+                <EditText
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:inputType="number" android:maxLength="2" android:layout_weight="1"
+                        android:hint="XX" android:backgroundTint="@android:color/transparent"
+                        android:id="@+id/seasonPlay" android:textSize="16sp"
+                        android:textAlignment="viewEnd"/>
+                <TextView
+                        android:text="season"
+                        android:layout_width="wrap_content" android:layout_gravity="center"
+                        android:layout_height="wrap_content" android:id="@+id/seasonPlayText" android:layout_weight="1"
+                        android:textSize="12sp"/>
+                <EditText
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:inputType="number" android:backgroundTint="@android:color/transparent"
+                        android:hint="XX" android:maxLength="2"
+                        android:id="@+id/seriesPlay" android:layout_weight="1" android:textSize="16sp"
+                        android:textAlignment="viewEnd"
+                />
+                <TextView
+                        android:text="series"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content" android:id="@+id/seriesPlayText" android:layout_weight="1"
+                        android:layout_marginEnd="10dp" android:textSize="12sp"
+                        android:textAlignment="center" android:layout_gravity="center_vertical"
+                        tools:ignore="RtlCompat"/>
+                <EditText
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:inputType="number" android:maxLength="2"
+                        android:hint="HH" android:backgroundTint="@android:color/transparent"
+                        android:id="@+id/hoursPlay" android:textSize="16sp" android:layout_marginEnd="5dp"
+                        android:layout_gravity="center"
+                        android:textAlignment="center" android:padding="0dp"/>
+                <TextView
+                        android:text=":"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content" android:id="@+id/textView4" android:layout_marginEnd="5dp"
+                        android:layout_gravity="center"/>
+                <EditText
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:inputType="number" android:maxLength="2"
+                        android:hint="MM" android:backgroundTint="@android:color/transparent"
+                        android:id="@+id/minutesPlay" android:textSize="16sp" android:layout_marginEnd="5dp"
+                        android:textAlignment="center" android:padding="0dp"
+                        android:layout_gravity="center"/>
+                <TextView
+                        android:text=":"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content" android:id="@+id/textView5" android:layout_marginEnd="5dp"
+                        android:layout_gravity="center"
+                />
+                <EditText
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:inputType="number" android:maxLength="2"
+                        android:hint="SS" android:backgroundTint="@android:color/transparent"
+                        android:id="@+id/secondsPlay" android:textSize="16sp" android:layout_marginEnd="5dp"
+                        android:layout_gravity="center"
+                        android:textAlignment="center" android:padding="0dp"/>
+                <ImageButton
+                        android:layout_width="35dp"
+                        android:layout_height="35dp" android:id="@+id/link"
+                        android:backgroundTint="@android:color/transparent"
+                        android:padding="0dp" android:layout_gravity="center"
+                        app:srcCompat="@drawable/link_svgrepo_com"
+                        android:scaleType="fitCenter" android:layout_weight="0"
+                        android:layout_margin="5dp" app:tint="@color/white"/>
+            </LinearLayout>
+            <TextView
+                    android:text="Overview"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" android:id="@+id/overviewBreak"
+                    android:layout_marginStart="20dp"
+                    android:layout_marginTop="20dp" android:layout_marginEnd="20dp" android:visibility="gone"/>
             <androidx.constraintlayout.widget.ConstraintLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:background="@drawable/screen_background"
+                    android:background="@drawable/main_theme_background"
                     android:id="@+id/constraintLayout"
-                    android:layout_marginTop="10dp"
-                    android:layout_marginStart="10dp"
-                    android:layout_marginEnd="10dp">
+                    android:layout_margin="10dp">
 
                 <androidx.constraintlayout.widget.Guideline
                         android:id="@+id/guideline"
@@ -80,18 +149,41 @@
                         app:layout_constraintVertical_bias="0.0" app:layout_constraintBottom_toBottomOf="parent"
                         android:layout_marginBottom="20dp" android:layout_marginTop="20dp"
                         app:layout_constraintHorizontal_bias="0.0"
-                        android:minWidth="40dp"/>
+                        android:minWidth="40dp" android:visibility="gone"/>
+
                 <EditText
                         android:hint="Rating"
-                        android:inputType="number"
+                        android:inputType="numberDecimal"
                         android:backgroundTint="@android:color/transparent"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content" android:id="@+id/filmRating"
-                        app:layout_constraintTop_toTopOf="parent"
-                        app:layout_constraintStart_toEndOf="@+id/imageView"
-                        android:layout_marginTop="5dp" android:layout_marginStart="10dp"
-                        android:textAlignment="textEnd"/>
-
+                        android:maxLength="3"
+                        android:textAlignment="textEnd"
+                        app:layout_constraintTop_toTopOf="@+id/releaseYear"
+                        app:layout_constraintEnd_toStartOf="@+id/imageStar" android:visibility="gone"/>
+                <ImageView
+                        android:layout_width="35dp"
+                        android:layout_height="35dp" app:srcCompat="@drawable/star_filled_svgrepo_com"
+                        android:id="@+id/imageStar"
+                        android:visibility="gone" android:padding="8dp"
+                        app:layout_constraintEnd_toEndOf="parent" app:layout_constraintTop_toTopOf="@+id/filmRating"
+                        android:layout_marginTop="5dp"/>
+                <EditText
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content" android:hint="Year" android:maxLength="4"
+                        android:inputType="number" android:backgroundTint="@android:color/transparent"
+                        android:id="@+id/releaseYear"
+                        android:textAlignment="textEnd" app:layout_constraintTop_toTopOf="parent"
+                        android:visibility="gone"
+                        app:layout_constraintStart_toStartOf="@+id/guideline"/>
+                <LinearLayout
+                        android:orientation="vertical"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:id="@+id/tagLayout"
+                        app:layout_constraintTop_toBottomOf="@+id/filmRating"
+                        app:layout_constraintStart_toEndOf="@+id/imageView" app:layout_constraintEnd_toEndOf="parent"
+                />
                 <androidx.constraintlayout.widget.Barrier
                         android:id="@+id/barrier"
                         android:layout_width="wrap_content"
@@ -105,27 +197,32 @@
                         android:layout_height="wrap_content" android:id="@+id/filmDescription"
                         app:layout_constraintTop_toBottomOf="@+id/barrier" app:layout_constraintEnd_toEndOf="parent"
                         android:layout_marginStart="10dp"
-                        app:layout_constraintBottom_toBottomOf="parent" android:layout_marginBottom="20dp"
+                        app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintVertical_bias="0.0"
                         app:layout_constraintHorizontal_bias="0.0" app:layout_constraintStart_toStartOf="parent"
-                        android:layout_marginTop="10dp"/>
-                <LinearLayout
-                        android:orientation="vertical"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:id="@+id/tagLayout"
-                        app:layout_constraintTop_toBottomOf="@+id/filmRating"
-                        app:layout_constraintStart_toEndOf="@+id/imageView" app:layout_constraintEnd_toEndOf="parent"/>
+                        android:layout_marginTop="10dp" android:layout_marginBottom="10dp" android:textSize="16sp"
+                        android:visibility="gone"/>
             </androidx.constraintlayout.widget.ConstraintLayout>
+            <TextView
+                    android:text="Commentary"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" android:id="@+id/commentaryBreak"
+                    android:layout_marginStart="20dp"
+                    android:layout_marginTop="10dp" android:layout_marginEnd="20dp"/>
             <EditText
-                    android:layout_width="wrap_content"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:hint="Commentary..."
-                    android:backgroundTint="@android:color/transparent"
-                    android:id="@+id/commentary"
-                    android:layout_marginStart="15dp"
-                    android:layout_marginEnd="15dp"
-                    android:layout_marginTop="10dp" android:singleLine="false" android:layout_marginBottom="80dp"/>
+                    android:background="@drawable/main_theme_background"
+                    android:padding="10dp" android:layout_margin="10dp"
+                    android:id="@+id/commentary" android:singleLine="false" android:textSize="16sp"
+            />
+            <TextView
+                    android:text="Comments"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" android:id="@+id/commentsBreak" android:visibility="gone"
+                    android:layout_marginStart="20dp" android:layout_marginEnd="20dp" android:layout_marginTop="20dp"
+                    android:layout_marginBottom="10dp"/>
         </LinearLayout>
     </ScrollView>
     <ImageButton
@@ -166,14 +263,39 @@
             android:id="@+id/addTag" android:backgroundTint="@android:color/transparent"
             app:layout_constraintBottom_toTopOf="@+id/addImage" app:layout_constraintEnd_toStartOf="@+id/addRating"
             android:scaleType="fitCenter" app:layout_constraintStart_toStartOf="@+id/addImage"
-            app:layout_constraintTop_toTopOf="@+id/addRating" android:visibility="gone"/>
+            app:layout_constraintTop_toTopOf="@+id/addRating"
+            android:visibility="gone"/>
     <ImageButton
             android:backgroundTint="@android:color/transparent"
             android:src="@drawable/link_button_svgrepo_com"
             android:layout_width="80dp" android:padding="10dp"
             android:layout_height="80dp" android:id="@+id/addLinkButton" android:scaleType="fitCenter"
             app:layout_constraintBottom_toTopOf="@+id/addRating" app:layout_constraintEnd_toEndOf="@+id/addRating"
-            app:layout_constraintStart_toStartOf="@+id/addRating" android:visibility="gone"/>
+            app:layout_constraintStart_toStartOf="@+id/addRating"
+            android:visibility="gone"/>
+    <ImageButton
+            android:src="@drawable/comment_dots_svgrepo_com"
+            android:layout_width="0dp" android:padding="10dp" android:scaleType="fitCenter"
+            android:layout_height="0dp" android:id="@+id/addComment"
+            android:backgroundTint="@android:color/transparent"
+            app:layout_constraintBottom_toTopOf="@+id/addTag" app:layout_constraintEnd_toStartOf="@+id/addLinkButton"
+            app:layout_constraintTop_toTopOf="@+id/addLinkButton" app:layout_constraintStart_toStartOf="@+id/addTag"
+            android:visibility="gone"/>
+    <ImageButton
+            android:src="@drawable/calendar_xmark_alt_svgrepo_com"
+            android:layout_width="80dp"
+            android:layout_height="80dp" android:id="@+id/addYear"
+            app:layout_constraintBottom_toTopOf="@+id/addLinkButton"
+            app:layout_constraintEnd_toEndOf="@+id/addLinkButton" android:scaleType="fitCenter"
+            android:backgroundTint="@android:color/transparent"
+            android:visibility="gone"/>
+    <ImageButton
+            android:src="@drawable/like_dislike_svgrepo_com"
+            android:layout_width="80dp"
+            android:layout_height="80dp" android:id="@+id/addMark"
+            app:layout_constraintBottom_toTopOf="@+id/addComment" app:layout_constraintEnd_toStartOf="@+id/addYear"
+            android:scaleType="fitCenter" android:backgroundTint="@android:color/transparent"
+            android:visibility="gone"/>
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

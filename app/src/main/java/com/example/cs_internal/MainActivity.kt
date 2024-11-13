@@ -17,62 +17,69 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import androidx.viewpager.widget.ViewPager
 import com.example.cs_internal.DataSingleton.adapters
 import com.example.cs_internal.DataSingleton.filmLists
+import com.example.cs_internal.DataSingleton.tags
 import com.google.android.material.tabs.TabLayout
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.DatabaseReference
+import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
 import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.storage.StorageReference
 import com.google.firebase.storage.ktx.storage
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
 
 class MainActivity : AppCompatActivity(){
-    private lateinit var searchView : SearchView
+
+
     private lateinit var swipeRefresh: SwipeRefreshLayout
     private lateinit var addButton : ImageButton
-    private var init = false
+    private lateinit var user : FirebaseUser
+    private lateinit var storageUserRef: StorageReference
+    private lateinit var databaseUserRef : DatabaseReference
+    private lateinit var toolbar: Toolbar
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-
         requestForPermissions()
-        setSupportActionBar(findViewById(R.id.toolbar))
 
         val authenticator = FirebaseAuth.getInstance()
-        val user = authenticator.currentUser
-
-        if(user == null){
+        val userOrNull = authenticator.currentUser
+        if(userOrNull == null){
             val intentToLoginActivity = Intent(this@MainActivity, LoginActivity::class.java)
             startActivity(intentToLoginActivity)
             finish()
         }
-        if(!user!!.isEmailVerified) {
+        if(!userOrNull!!.isEmailVerified) {
             val intent = Intent(this, EmailVerificationActivity::class.java)
             startActivity(intent)
             finish()
         }
+        user = userOrNull
 
-        supportActionBar?.title = user.displayName
+        val firebaseInstance = FirebaseDatabase.getInstance()
+        firebaseInstance.goOffline()
+        firebaseInstance.goOnline()
+        databaseUserRef = firebaseInstance.reference.child("users/${user.uid}")
+        storageUserRef = Firebase.storage.reference.child("users/${user.uid}")
 
-        val signOutButton : Button = findViewById(R.id.buttonSignOut)
-
-        signOutButton.setOnClickListener(){
-            authenticator.signOut()
-            val intent = Intent(this, LoginActivity::class.java)
-            startActivity(intent)
-            finish()
-        }
-
-        val databaseUserRef : DatabaseReference = Firebase.database.reference.child("users/${user.uid}")
-        val storageUserRef : StorageReference = Firebase.storage.reference.child("users/${user.uid}")
+        toolbar = findViewById(R.id.toolbar)
+        toolbar.title = user.displayName
+        ImageLoader().loadProfileImage(user.uid, storageUserRef, toolbar, this)
+        setSupportActionBar(toolbar)
 
         val viewPager : ViewPager = findViewById(R.id.viewPager)
         viewPager.offscreenPageLimit = 2
         val pagerAdapter = PagerAdapter(supportFragmentManager, databaseUserRef, storageUserRef,this)
         pagerAdapter.setAdapters()
         viewPager.adapter = pagerAdapter
+        viewPager.setCurrentItem(1, false)
         val tabLayout : TabLayout = findViewById(R.id.tabLayout)
         tabLayout.setupWithViewPager(viewPager)
 
@@ -84,26 +91,24 @@ class MainActivity : AppCompatActivity(){
         swipeRefresh.setDistanceToTriggerSync(800)
         updateFilms(databaseUserRef)
         swipeRefresh.setOnRefreshListener {
-//                Toast.makeText(this, "", Toast.LENGTH_SHORT).show()
                 updateFilms(databaseUserRef)
         }
 
         addButton = findViewById(R.id.add_button)
         addButton.setOnClickListener(){
-            val currentPage = tabLayout.selectedTabPosition
             val intent = Intent(this@MainActivity, FilmActivity::class.java)
             intent.apply {
                 putExtra("new", true)
-                putExtra("pageNum", currentPage)
+                putExtra("pageNum", viewPager.currentItem)
             }
             startActivity(intent)
         }
 
-        val toolbar : Toolbar = findViewById(R.id.toolbar)
         toolbar.setNavigationOnClickListener {
             val intent = Intent(this@MainActivity, ProfileActivity::class.java)
             startActivity(intent)
         }
+
     }
 
     private fun requestForPermissions() {
@@ -125,7 +130,6 @@ class MainActivity : AppCompatActivity(){
     private fun updateFilms(databaseUserRef : DatabaseReference) {
         swipeRefresh.isRefreshing = true
         for(i in 0 until 3) {
-            adapters[i].resetList()
             val size = filmLists[i].size
             filmLists[i].clear()
             adapters[i].notifyItemRangeRemoved(0, size)
@@ -136,89 +140,70 @@ class MainActivity : AppCompatActivity(){
                 for (filmSnapshot in dataSnapshot.children) {
                     val ref = filmSnapshot.key
                     if(ref == null){
-                        Toast.makeText(this@MainActivity, "Failed to download some changes.\nKey is null", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(this@MainActivity, "Failed to download some data.\nKey is null", Toast.LENGTH_LONG).show()
                     } else {
-                        val title = filmSnapshot.child("title").getValue(String::class.java) ?: ""
-                        val type = filmSnapshot.child("type").getValue(Int::class.java) ?: 0
-                        val desc = filmSnapshot.child("desc").getValue(String::class.java)
-                        val rating = filmSnapshot.child("rating").getValue(String::class.java)
-                        val imageLink = filmSnapshot.child("imageLink").getValue(String::class.java)
-                        val comm = filmSnapshot.child("commentary").getValue(String::class.java)
-                        val link = filmSnapshot.child("link").getValue(String::class.java)
-                        val newFilm = FilmItem(title, type, ref, desc, rating, comm, imageLink, link)
-                        filmSnapshot.child("tags").children.forEach { tagSnapshot->
-                            val tag = tagSnapshot.getValue(String::class.java) ?: ""
-                            newFilm.addTag(tag)
-                            DataSingleton.tags.add(tag)
+                        val editTime = filmSnapshot.child("lastEditTime").getValue(Long::class.java) ?: 0
+                        if(editTime > 0){
+                            val title = filmSnapshot.child("title").getValue(String::class.java) ?: ""
+                            val type = filmSnapshot.child("type").getValue(Int::class.java) ?: 0
+                            val desc = filmSnapshot.child("desc").getValue(String::class.java)
+                            val rating = filmSnapshot.child("rating").getValue(String::class.java)
+                            val imageLink = filmSnapshot.child("imageLink").getValue(String::class.java)
+                            val mark = filmSnapshot.child("mark").getValue(Int::class.java)
+                            val commentary = filmSnapshot.child("commentary").getValue(String::class.java)
+                            val link = filmSnapshot.child("link").getValue(String::class.java)
+                            val year = filmSnapshot.child("year").getValue(Int::class.java)
+                            val watchTime = filmSnapshot.child("currentWatchTime").getValue(Int::class.java) ?: 0
+                            val isASeries = filmSnapshot.child("isASeries").getValue(Boolean::class.java) ?: false
+                            val filmTags = mutableListOf<String>()
+                            val comments = mutableListOf<Comment>()
+                            filmSnapshot.child("tags").children.forEach { tagSnapshot->
+                                val tag = tagSnapshot.getValue(String::class.java) ?: ""
+                                filmTags.add(tag)
+                                if(!tags.contains(tag)) tags.add(tag)
+                            }
+                            filmSnapshot.child("comments").children.forEach { commentSnapshot->
+                                val timecode = commentSnapshot.key?.toInt() ?: 0
+                                val text = commentSnapshot.getValue(String::class.java) ?: ""
+                                comments.add(Comment(timecode, text))
+                            }
+                            val newFilm = FilmItem(title, type, ref, desc, rating, imageLink, mark, commentary, link, year, watchTime, editTime, filmTags, comments, isASeries)
+                            filmLists[type].add(0, newFilm)
+                            adapters[type].notifyItemInserted(0)
                         }
-                        filmLists[type].add(0, newFilm)
-                        adapters[type].notifyItemInserted(0)
+                        else{
+                            databaseUserRef.child(ref).removeValue()
+                        }
                     }
                 }
                 swipeRefresh.isRefreshing = false
             }
             override fun onCancelled(databaseError: DatabaseError) {
                 Toast.makeText(this@MainActivity, "Database connection error", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this@MainActivity, databaseError.message, Toast.LENGTH_LONG).show()
                 swipeRefresh.isRefreshing = false
             }
         })
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
-        menuInflater.inflate(R.menu.toolbar_menu, menu)
+        menuInflater.inflate(R.menu.main_toolbar_menu, menu)
+
         val searchItem = menu.findItem(R.id.action_search)
-        searchView = searchItem?.actionView as SearchView
-        searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener{
-            override fun onQueryTextSubmit(query: String?): Boolean {
-                searchView.clearFocus()
-                return true
-            }
-            override fun onQueryTextChange(newText: String?): Boolean {
-                applyFilter(newText)
-                return true
-            }
-        })
+        searchItem.setOnMenuItemClickListener {
+            val intent = Intent(this@MainActivity, SearchActivity::class.java)
+            startActivity(intent)
+            false
+        }
 
-        searchItem.setOnActionExpandListener(object : MenuItem.OnActionExpandListener {
-            override fun onMenuItemActionExpand(item: MenuItem): Boolean {
-                addButton.visibility = GONE
-                swipeRefresh.isEnabled = false
-                return true
-            }
-            override fun onMenuItemActionCollapse(item: MenuItem): Boolean {
-                addButton.visibility = VISIBLE
-                for(i in 0 until 3){
-                    adapters[i].resetList()
-                }
-                swipeRefresh.isEnabled = true
-                return true
-            }
-        })
-        init = true
+        val settingsButton = menu.findItem(R.id.settings)
+        settingsButton.setOnMenuItemClickListener {
+            val intent = Intent(this@MainActivity, ProfileActivity::class.java)
+            startActivity(intent)
+            false
+        }
+
         return true
-    }
-
-    override fun onResume() {
-        super.onResume()
-        if(init){
-            for(i in 0 until 3){
-                adapters[i].resetList()
-            }
-            if(searchView.query.isNotEmpty()){
-                applyFilter(searchView.query.toString())
-            }
-        }
-    }
-
-
-    private fun applyFilter(newText : String?){
-        val target = newText.orEmpty().trim()
-        for(i in 0 until 3){
-            val filteredList = filmLists[i].mapNotNull { filmItem ->
-                filmItem.searchAndSpan(target)
-            }.toMutableList()
-            adapters[i].setFilteredList(filteredList)
-        }
     }
 
 }

@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:id="@+id/action_add"
+          android:title="Add film"/>
+    <item android:id="@+id/action_translate_to_original"
+          android:title="Translate to original"/>
+    <item android:id="@+id/action_translate_to_english"
+          android:title="Translate to English"/>
+    <item android:id="@+id/action_translate_to_russian"
+          android:title="Translate to Russian"/>
+</menu>

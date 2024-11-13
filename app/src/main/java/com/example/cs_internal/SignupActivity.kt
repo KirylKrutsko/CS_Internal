@@ -59,12 +59,6 @@ class SignupActivity : AppCompatActivity() {
                             user!!.updateProfile(profileUpdates)
                                 .addOnCompleteListener { task ->
                                     if (task.isSuccessful) {
-                                        val newUserId = user.uid
-                                        val userDatabaseRef = database.child("users")
-                                        val userReference = userDatabaseRef.child(newUserId)
-                                        for(i in 0 until  3){
-                                            userReference.child("$i"+"_films")
-                                        }
                                         Toast.makeText(this, "User is created successfully!", Toast.LENGTH_SHORT).show()
                                         val intentToMainActivity = Intent(this@SignupActivity, MainActivity::class.java)
                                         startActivity(intentToMainActivity)
@@ -72,10 +66,12 @@ class SignupActivity : AppCompatActivity() {
                                     }
                                     else{
                                         Toast.makeText(this, "User profile update failed", Toast.LENGTH_SHORT).show()
+                                        Toast.makeText(this, task.exception?.message, Toast.LENGTH_LONG).show()
                                     }
                                 }
                         } else {
                             Toast.makeText(this, "User creation failed", Toast.LENGTH_SHORT).show()
+                            Toast.makeText(this, task.exception?.message, Toast.LENGTH_LONG).show()
                         }
                     }
             }

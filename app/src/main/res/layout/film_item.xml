@@ -4,47 +4,47 @@
                                                    xmlns:tools="http://schemas.android.com/tools"
                                                    android:layout_width="match_parent"
                                                    android:layout_height="wrap_content"
-                                                   android:background="@drawable/screen_background"
+                                                   android:background="@drawable/main_theme_background"
                                                    android:layout_marginTop="10dp" android:layout_marginRight="10dp"
                                                    android:layout_marginLeft="10dp" android:layout_marginBottom="10dp"
 >
     <TextView
             android:text="Title"
-            android:textColor="@color/black"
+            android:textColor="@color/white"
             android:layout_width="0dp"
             android:layout_height="wrap_content" android:id="@+id/filmTitle"
             app:layout_constraintTop_toTopOf="parent" app:layout_constraintStart_toStartOf="parent"
             android:layout_marginTop="20dp" android:layout_marginStart="20dp"
-            android:textSize="20sp" app:layout_constraintEnd_toStartOf="@+id/film_rating"
+            android:textSize="20sp" app:layout_constraintEnd_toStartOf="@+id/filmYear"
             app:layout_constraintHorizontal_bias="0.0" android:layout_marginEnd="20dp" android:maxLines="5"/>
     <TextView
-            android:text="rating"
+            android:text="year" android:textSize="16sp" android:textColor="@color/white"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content" android:id="@+id/film_rating"
-            app:layout_constraintBottom_toBottomOf="@+id/optionsButton"
-            app:layout_constraintTop_toTopOf="@+id/optionsButton"
-            app:layout_constraintEnd_toStartOf="@+id/optionsButton"
-            android:layout_marginEnd="10dp"/>
+            android:layout_height="wrap_content" android:id="@+id/filmYear"
+            app:layout_constraintBottom_toBottomOf="@+id/markImage"
+            app:layout_constraintTop_toTopOf="@+id/markImage"
+            app:layout_constraintEnd_toStartOf="@+id/markImage"
+            android:textAlignment="textEnd" android:layout_marginEnd="10dp"/>
     <TextView
             android:text="film description..."
             android:layout_width="0dp"
             android:layout_height="wrap_content" android:id="@+id/film_description"
-            android:maxLines="5"
             app:layout_constraintStart_toEndOf="@+id/imageView2"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/tagLayout"
-            android:layout_margin="10dp" app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintVertical_bias="0.0"/>
+            android:layout_marginStart="10dp" android:layout_marginEnd="10dp"
+            app:layout_constraintBottom_toBottomOf="parent" app:layout_constraintVertical_bias="0.0"
+            android:layout_marginBottom="10dp" android:maxLines="12"/>
     <ImageButton
             android:layout_width="50dp"
             android:layout_height="50dp" app:srcCompat="@drawable/baseline_more_vert_24"
-            android:id="@+id/optionsButton"
+            android:id="@+id/optionsButton" app:tint="@color/white"
             android:backgroundTint="@android:color/transparent"
             app:layout_constraintTop_toTopOf="parent" app:layout_constraintEnd_toEndOf="parent"
             android:scaleType="fitCenter" android:layout_marginTop="5dp"/>
     <com.example.cs_internal.CustomImageView
             android:layout_width="128dp"
-            android:background="@drawable/screen_background"
+            android:background="@drawable/main_theme_background"
             android:layout_height="wrap_content" app:srcCompat="@drawable/outline_image_24" android:id="@+id/imageView2"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/filmTitle" android:layout_marginTop="20dp"
@@ -60,4 +60,12 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@+id/imageView2" app:layout_constraintTop_toTopOf="@+id/imageView2"
     />
+    <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="32dp" app:srcCompat="@drawable/emoji_5_svgrepo_com"
+            android:id="@+id/markImage" android:scaleType="fitCenter"
+            app:layout_constraintEnd_toStartOf="@+id/optionsButton" android:visibility="gone"
+            app:layout_constraintTop_toTopOf="@+id/optionsButton"
+            app:layout_constraintBottom_toBottomOf="@+id/optionsButton" android:layout_marginTop="4dp"
+            android:layout_marginBottom="4dp"/>
 </androidx.constraintlayout.widget.ConstraintLayout>

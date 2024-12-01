@@ -36,9 +36,7 @@ import retrofit2.Response
 
 class MainActivity : AppCompatActivity(){
 
-
     private lateinit var swipeRefresh: SwipeRefreshLayout
-    private lateinit var addButton : ImageButton
     private lateinit var user : FirebaseUser
     private lateinit var storageUserRef: StorageReference
     private lateinit var databaseUserRef : DatabaseReference
@@ -47,25 +45,11 @@ class MainActivity : AppCompatActivity(){
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        requestForPermissions()
 
-        val authenticator = FirebaseAuth.getInstance()
-        val userOrNull = authenticator.currentUser
-        if(userOrNull == null){
-            val intentToLoginActivity = Intent(this@MainActivity, LoginActivity::class.java)
-            startActivity(intentToLoginActivity)
-            finish()
-        }
-        if(!userOrNull!!.isEmailVerified) {
-            val intent = Intent(this, EmailVerificationActivity::class.java)
-            startActivity(intent)
-            finish()
-        }
-        user = userOrNull
+        requestForPermissions()
+        checkUser()
 
         val firebaseInstance = FirebaseDatabase.getInstance()
-        firebaseInstance.goOffline()
-        firebaseInstance.goOnline()
         databaseUserRef = firebaseInstance.reference.child("users/${user.uid}")
         storageUserRef = Firebase.storage.reference.child("users/${user.uid}")
 
@@ -89,12 +73,12 @@ class MainActivity : AppCompatActivity(){
 
         swipeRefresh = findViewById(R.id.swipeRefresh)
         swipeRefresh.setDistanceToTriggerSync(800)
-        updateFilms(databaseUserRef)
+        updateFilms()
         swipeRefresh.setOnRefreshListener {
-                updateFilms(databaseUserRef)
+                updateFilms()
         }
 
-        addButton = findViewById(R.id.add_button)
+        val addButton : ImageButton = findViewById(R.id.add_button)
         addButton.setOnClickListener(){
             val intent = Intent(this@MainActivity, FilmActivity::class.java)
             intent.apply {
@@ -113,26 +97,46 @@ class MainActivity : AppCompatActivity(){
 
     private fun requestForPermissions() {
         val requestPermissions = registerForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) {}
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) { // android sdk 34 and higher
             requestPermissions.launch(arrayOf(
                 Manifest.permission.READ_MEDIA_IMAGES,
                 Manifest.permission.READ_MEDIA_VISUAL_USER_SELECTED
             ))
-        } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+        } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) { // android sdk 33
             requestPermissions.launch(arrayOf(
                 Manifest.permission.READ_MEDIA_IMAGES
             ))
-        } else {
-            requestPermissions.launch(arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE))
+        } else { // all other sdk versions lower than 33
+            requestPermissions.launch(arrayOf(
+                Manifest.permission.READ_EXTERNAL_STORAGE
+            ))
         }
     }
 
-    private fun updateFilms(databaseUserRef : DatabaseReference) {
+    private fun checkUser() {
+        val authenticator = FirebaseAuth.getInstance()
+        val userOrNull = authenticator.currentUser
+        if(userOrNull == null){
+            // no active user, redirect to login
+            val intentToLoginActivity = Intent(this@MainActivity, LoginActivity::class.java)
+            startActivity(intentToLoginActivity)
+            finish()
+        }
+        if(!userOrNull!!.isEmailVerified) {
+            // email needs to be verified
+            val intent = Intent(this, EmailVerificationActivity::class.java)
+            startActivity(intent)
+            finish()
+        }
+        user = userOrNull
+    }
+
+    private fun updateFilms() {     // re-downloading all items from database
         swipeRefresh.isRefreshing = true
         for(i in 0 until 3) {
-            val size = filmLists[i].size
+            val size = filmLists[i].size // app-global lists of films
             filmLists[i].clear()
-            adapters[i].notifyItemRangeRemoved(0, size)
+            adapters[i].notifyItemRangeRemoved(0, size) // recycler view adapters for list displaying
         }
         val toRetrieveRef = databaseUserRef.orderByChild("lastEditTime")
         toRetrieveRef.addListenerForSingleValueEvent(object : ValueEventListener {
@@ -144,34 +148,12 @@ class MainActivity : AppCompatActivity(){
                     } else {
                         val editTime = filmSnapshot.child("lastEditTime").getValue(Long::class.java) ?: 0
                         if(editTime > 0){
-                            val title = filmSnapshot.child("title").getValue(String::class.java) ?: ""
-                            val type = filmSnapshot.child("type").getValue(Int::class.java) ?: 0
-                            val desc = filmSnapshot.child("desc").getValue(String::class.java)
-                            val rating = filmSnapshot.child("rating").getValue(String::class.java)
-                            val imageLink = filmSnapshot.child("imageLink").getValue(String::class.java)
-                            val mark = filmSnapshot.child("mark").getValue(Int::class.java)
-                            val commentary = filmSnapshot.child("commentary").getValue(String::class.java)
-                            val link = filmSnapshot.child("link").getValue(String::class.java)
-                            val year = filmSnapshot.child("year").getValue(Int::class.java)
-                            val watchTime = filmSnapshot.child("currentWatchTime").getValue(Int::class.java) ?: 0
-                            val isASeries = filmSnapshot.child("isASeries").getValue(Boolean::class.java) ?: false
-                            val filmTags = mutableListOf<String>()
-                            val comments = mutableListOf<Comment>()
-                            filmSnapshot.child("tags").children.forEach { tagSnapshot->
-                                val tag = tagSnapshot.getValue(String::class.java) ?: ""
-                                filmTags.add(tag)
-                                if(!tags.contains(tag)) tags.add(tag)
-                            }
-                            filmSnapshot.child("comments").children.forEach { commentSnapshot->
-                                val timecode = commentSnapshot.key?.toInt() ?: 0
-                                val text = commentSnapshot.getValue(String::class.java) ?: ""
-                                comments.add(Comment(timecode, text))
-                            }
-                            val newFilm = FilmItem(title, type, ref, desc, rating, imageLink, mark, commentary, link, year, watchTime, editTime, filmTags, comments, isASeries)
-                            filmLists[type].add(0, newFilm)
-                            adapters[type].notifyItemInserted(0)
+                            val newFilm = retrieveFilmItem(filmSnapshot, ref)
+                            filmLists[newFilm.getType()].add(0, newFilm)
+                            adapters[newFilm.getType()].notifyItemInserted(0)
                         }
                         else{
+                            // this check removes items that were created but never saved
                             databaseUserRef.child(ref).removeValue()
                         }
                     }
@@ -184,6 +166,35 @@ class MainActivity : AppCompatActivity(){
                 swipeRefresh.isRefreshing = false
             }
         })
+    }
+
+    private fun retrieveFilmItem(filmSnapshot: DataSnapshot, ref : String) : FilmItem {
+        val title = filmSnapshot.child("title").getValue(String::class.java) ?: ""
+        val type = filmSnapshot.child("type").getValue(Int::class.java) ?: 0
+        val desc = filmSnapshot.child("desc").getValue(String::class.java)
+        val rating = filmSnapshot.child("rating").getValue(String::class.java)
+        val imageLink = filmSnapshot.child("imageLink").getValue(String::class.java)
+        val mark = filmSnapshot.child("mark").getValue(Int::class.java)
+        val commentary = filmSnapshot.child("commentary").getValue(String::class.java)
+        val link = filmSnapshot.child("link").getValue(String::class.java)
+        val year = filmSnapshot.child("year").getValue(Int::class.java)
+        val watchTime = filmSnapshot.child("currentWatchTime").getValue(Int::class.java) ?: 0
+        val isASeries = filmSnapshot.child("isASeries").getValue(Boolean::class.java) ?: false
+        val editTime = filmSnapshot.child("lastEditTime").getValue(Long::class.java) ?: 0
+        val filmTags = mutableListOf<String>()
+        val comments = mutableListOf<Comment>()
+        filmSnapshot.child("tags").children.forEach { tagSnapshot->
+            val tag = tagSnapshot.getValue(String::class.java) ?: ""
+            filmTags.add(tag)
+            if(!tags.contains(tag)) tags.add(tag) // adds tags to app-global tag list (used for sorting)
+        }
+        filmSnapshot.child("comments").children.forEach { commentSnapshot->
+            val timecode = commentSnapshot.key?.toInt() ?: 0
+            val text = commentSnapshot.getValue(String::class.java) ?: ""
+            comments.add(Comment(timecode, text))
+        }
+        return FilmItem(title, type, ref, desc, rating, imageLink, mark, commentary,
+            link, year, watchTime, editTime, filmTags, comments, isASeries)
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {

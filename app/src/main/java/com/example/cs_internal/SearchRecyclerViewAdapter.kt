@@ -11,7 +11,6 @@ import android.widget.ImageButton
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
-import android.widget.Toast
 import androidx.recyclerview.widget.RecyclerView
 import com.example.cs_internal.DataSingleton.tags
 import com.google.firebase.storage.StorageReference
@@ -91,20 +90,21 @@ class SearchRecyclerViewAdapter(
         }
     }
 
-    fun filterByTarget(target: String){
-        currentFilmList = filteredList(target, appliedTagFilter, appliedMarkFilter)
+    fun filterByTarget(target: String){ // called when search query is modified
+        currentFilmList = filterList(target, appliedTagFilter, appliedMarkFilter)
         notifyDataSetChanged()
     }
-    fun filterByTags(tagIndices: MutableSet<Int>){
-        currentFilmList = filteredList(appliedStringFilter, tagIndices, appliedMarkFilter)
+    fun filterByTags(tagIndices: MutableSet<Int>){ // called when tags selection is modified
+        currentFilmList = filterList(appliedStringFilter, tagIndices, appliedMarkFilter)
         notifyDataSetChanged()
     }
-    fun filterByMark(marks: MutableSet<Int>){
-        currentFilmList = filteredList(appliedStringFilter, appliedTagFilter, marks)
+    fun filterByMark(marks: MutableSet<Int>){ // called when mark selection is modified
+        currentFilmList = filterList(appliedStringFilter, appliedTagFilter, marks)
         notifyDataSetChanged()
     }
 
-    private fun filteredList(target : String, tagIndices : MutableSet<Int>, marks : MutableSet<Int>) : MutableList<FilmItem> {
+    private fun filterList(target : String, tagIndices : MutableSet<Int>, marks : MutableSet<Int>)
+    : MutableList<FilmItem> {
         appliedStringFilter = target
         appliedTagFilter.clear()
         appliedTagFilter.addAll(tagIndices)
@@ -120,11 +120,13 @@ class SearchRecyclerViewAdapter(
                 }
             }
             if((markFound || marks.isEmpty()) && (tagFound || tagIndices.isEmpty())){
-                filmItem.smartSearch(target) // returns the FilmItemSearched object with calculated
+                filmItem.smartSearch(target)
+                // returns null if match value is too low
+                // the FilmItemSearched object otherwise
             }
             else null
         }.toMutableList()
-        filteredList.sortDescending()
+        filteredList.sortDescending() // comparison based on match value defined in FilmItemSearched class
         return filteredList as MutableList<FilmItem>
     }
 
@@ -157,7 +159,7 @@ class SearchRecyclerViewAdapter(
             }
             else -> allFilmList.sortByDescending { it.getLastEditTime() }
         }
-        currentFilmList = filteredList(appliedStringFilter, appliedTagFilter, appliedMarkFilter)
+        currentFilmList = filterList(appliedStringFilter, appliedTagFilter, appliedMarkFilter)
         notifyDataSetChanged()
     }
 

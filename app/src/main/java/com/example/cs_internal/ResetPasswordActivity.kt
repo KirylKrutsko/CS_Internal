@@ -25,7 +25,7 @@ class ResetPasswordActivity : AppCompatActivity() {
         }
         sendButton.setOnClickListener(){
             val enteredEmail : String = email.text.toString()
-            if(enteredEmail == ""){
+            if(enteredEmail.isBlank()){
                 Toast.makeText(this, "Please enter email", Toast.LENGTH_SHORT).show()
             } else {
                 authenticator.sendPasswordResetEmail(enteredEmail).addOnFailureListener {

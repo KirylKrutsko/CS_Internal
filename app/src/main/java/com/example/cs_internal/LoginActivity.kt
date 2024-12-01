@@ -60,10 +60,10 @@ class LoginActivity : AppCompatActivity() {
             val enteredEmail = emailText.text.toString()
             val enteredPassword = passwordText.text.toString()
 
-            if(enteredEmail == "" || enteredPassword == ""){
+            if(enteredEmail.isBlank() || enteredPassword.isBlank()){
                 Toast.makeText(this, "Please enter both email and password", Toast.LENGTH_SHORT).show()
             }
-            else{
+            else{  // logic check
                 authenticator.signInWithEmailAndPassword(enteredEmail, enteredPassword)
                     .addOnCompleteListener(this){ task ->
                         if(task.isSuccessful){
@@ -73,7 +73,9 @@ class LoginActivity : AppCompatActivity() {
                             finish()
                         }
                         else{
-                            Toast.makeText(this, "Login failed. Check entered data and try again", Toast.LENGTH_SHORT).show()
+                            Toast.makeText(this,
+                                "Login failed\nCheck entered data and try again",
+                                Toast.LENGTH_SHORT).show()
                         }
                     }
             }

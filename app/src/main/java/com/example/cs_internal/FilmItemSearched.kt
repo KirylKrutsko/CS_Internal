@@ -27,25 +27,26 @@ class FilmItemSearched(filmItem: FilmItem) : FilmItem(filmItem), Comparable<Film
         var score : Int
         for (word in words) {
             score = FuzzySearch.partialRatio(word, getTitle())
-            if(score > 70) titleScore += score
+            // maximum levenshtein distance of all word-to-word comparisons
 
+            if(score > 70) titleScore += score
+            // partial ratio score of at least 70
+            // is accepted as "similar" enough word
             if(!getDescription().isNullOrBlank()){
                 score = FuzzySearch.partialRatio(word, getDescription())
                 if(score > 70) descriptionScore += score
             }
-
             if(!getCommentary().isNullOrBlank()){
                 score = FuzzySearch.partialRatio(word, getCommentary())
                 if(score > 70) commentaryScore += score
             }
-
             if(mergedComments.isNotBlank()){
                 score = FuzzySearch.partialRatio(word, mergedComments)
                 if(score > 70) commentsScore += score
             }
         }
-
         return (0.5 * titleScore + 0.2 * descriptionScore + 0.2 * commentaryScore + 0.1 * commentsScore)
+        // matches in titles are more valuable than in other fields
     }
 
     override fun compareTo(other: FilmItemSearched): Int {

@@ -45,10 +45,24 @@ class SignupActivity : AppCompatActivity() {
             val enteredPassword = passwordText.text.toString()
             val enteredEmail = emailText.text.toString()
 
-            if(enteredName == "" || enteredPassword == "" || enteredEmail == ""){
+            // password validation
+            if(enteredName.isBlank() || enteredPassword.isBlank() || enteredEmail.isBlank()){
                 Toast.makeText(this, "Please enter all name, email and password", Toast.LENGTH_SHORT).show()
             }
-            else{
+            else if(enteredPassword.length < 6){
+                Toast.makeText(this, "Password must be at least 8 characters long!", Toast.LENGTH_SHORT).show()
+            }
+            else if(!enteredPassword.any { it.isDigit() }){
+                Toast.makeText(this, "Password must contain a digit!", Toast.LENGTH_SHORT).show()
+            }
+            else if(!enteredPassword.any { it.isUpperCase() }){
+                Toast.makeText(this, "Password must contain an uppercase!", Toast.LENGTH_SHORT).show()
+            }
+            else if(!enteredPassword.any { it.isLowerCase() }){
+                Toast.makeText(this, "Password must contain an lowercase!", Toast.LENGTH_SHORT).show()
+            }
+            else {
+                // user creation
                 authenticator.createUserWithEmailAndPassword(enteredEmail, enteredPassword)
                     .addOnCompleteListener(this) { task ->
                         if (task.isSuccessful) {

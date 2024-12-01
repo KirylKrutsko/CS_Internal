@@ -20,11 +20,11 @@ import java.io.File
 import java.lang.Exception
 
 class ImageLoader(){
-    fun compressImage(context: Context, bitmap: Bitmap, size : Int) : ByteArray {
+    fun compressImage(bitmap: Bitmap, size : Int) : ByteArray {
         val toReturn = ByteArrayOutputStream()
         val k = maxOf(bitmap.width.toFloat(), bitmap.height.toFloat()) / size
+        // coefficient by which the bitmap needs to be compressed to fit in the size bounds
         if(k>1){
-//            Toast.makeText(context, "Your image will be compressed for saving into database", Toast.LENGTH_SHORT).show()
             val scaledBitmap = Bitmap.createScaledBitmap(bitmap,(bitmap.width / k).toInt(), (bitmap.height / k).toInt(), true)
             scaledBitmap.compress(Bitmap.CompressFormat.JPEG, 100, toReturn)
         }

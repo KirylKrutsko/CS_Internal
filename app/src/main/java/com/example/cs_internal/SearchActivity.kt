@@ -37,7 +37,6 @@ class SearchActivity : AppCompatActivity() {
     private lateinit var recyclerViewAdapter: SearchRecyclerViewAdapter
     private lateinit var searchView : SearchView
     private lateinit var sortLayout: LinearLayout
-    private var init = false
     private lateinit var checkResultsText : TextView
     private var orderBy = 0
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -113,7 +112,6 @@ class SearchActivity : AppCompatActivity() {
                 return true
             }
         })
-        init = true
         return true
     }
 

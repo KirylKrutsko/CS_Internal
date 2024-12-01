@@ -22,7 +22,7 @@ class EmailVerificationActivity : AppCompatActivity() {
             user!!.sendEmailVerification()
                 .addOnCompleteListener { task ->
                     if (task.isSuccessful) {
-                        Toast.makeText(this, "We have sent you the mail for verification!", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(this, "Email for verification is sent!", Toast.LENGTH_SHORT).show()
                     } else {
                         Toast.makeText(this, "Email sending is failed", Toast.LENGTH_SHORT).show()
                         Toast.makeText(this, task.exception?.message, Toast.LENGTH_LONG).show()
@@ -36,7 +36,11 @@ class EmailVerificationActivity : AppCompatActivity() {
             override fun run() {
                 user!!.reload()
                 if (user.isEmailVerified) {
-                    Toast.makeText(this@EmailVerificationActivity, "Email is verified successfully!", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(
+                        this@EmailVerificationActivity,
+                        "Email is verified successfully!",
+                        Toast.LENGTH_SHORT
+                    ).show()
                     val intent = Intent(this@EmailVerificationActivity, MainActivity::class.java)
                     startActivity(intent)
                 } else {
@@ -44,7 +48,6 @@ class EmailVerificationActivity : AppCompatActivity() {
                 }
             }
         }
-
         handler.postDelayed(emailVerificationChecker, 1000)
 
     }

@@ -1,18 +1,15 @@
 package com.example.cs_internal
 
 import android.Manifest
+import android.content.Context
 import android.content.Intent
 import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.Menu
-import android.view.MenuItem
-import android.view.View.GONE
-import android.view.View.VISIBLE
 import android.widget.*
 import androidx.appcompat.widget.Toolbar
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.appcompat.widget.SearchView
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import androidx.viewpager.widget.ViewPager
 import com.example.cs_internal.DataSingleton.adapters
@@ -24,15 +21,11 @@ import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.DatabaseReference
-import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
 import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.storage.StorageReference
 import com.google.firebase.storage.ktx.storage
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
 
 class MainActivity : AppCompatActivity(){
 
@@ -49,8 +42,7 @@ class MainActivity : AppCompatActivity(){
         requestForPermissions()
         checkUser()
 
-        val firebaseInstance = FirebaseDatabase.getInstance()
-        databaseUserRef = firebaseInstance.reference.child("users/${user.uid}")
+        databaseUserRef = Firebase.database.reference.child("users/${user.uid}")
         storageUserRef = Firebase.storage.reference.child("users/${user.uid}")
 
         toolbar = findViewById(R.id.toolbar)
@@ -68,7 +60,7 @@ class MainActivity : AppCompatActivity(){
         tabLayout.setupWithViewPager(viewPager)
 
         tabLayout.getTabAt(0)?.setIcon(R.drawable.outline_watch_later_24)
-        tabLayout.getTabAt(1)?.setIcon(R.drawable.outline_remove_red_eye_24)
+        tabLayout.getTabAt(1)?.setIcon(R.drawable.eye_svgrepo_com)
         tabLayout.getTabAt(2)?.setIcon(R.drawable.baseline_done_all_24)
 
         swipeRefresh = findViewById(R.id.swipeRefresh)
@@ -138,6 +130,10 @@ class MainActivity : AppCompatActivity(){
             filmLists[i].clear()
             adapters[i].notifyItemRangeRemoved(0, size) // recycler view adapters for list displaying
         }
+        val editor = getSharedPreferences("FilmImages", Context.MODE_PRIVATE).edit()
+        editor.clear()   // removing all existing film images URIs to force image re-download from storage
+        editor.apply()
+
         val toRetrieveRef = databaseUserRef.orderByChild("lastEditTime")
         toRetrieveRef.addListenerForSingleValueEvent(object : ValueEventListener {
             override fun onDataChange(dataSnapshot: DataSnapshot) {

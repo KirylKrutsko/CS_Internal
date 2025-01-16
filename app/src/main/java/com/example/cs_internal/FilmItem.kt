@@ -12,6 +12,7 @@ import android.view.View.GONE
 import android.view.View.VISIBLE
 import android.view.ViewGroup
 import android.widget.ImageView
+import android.widget.Toast
 import com.google.firebase.database.*
 import com.google.firebase.storage.StorageReference
 import com.google.gson.annotations.Expose
@@ -148,10 +149,10 @@ open class FilmItem(
         if(hasImage()){
             val imageRef = storageUserRef.child("film_images/$imageLink")
             val file = File(context.cacheDir, databaseRef)
-            imageRef.getFile(file)
+            imageRef.getFile(file) // downloading the image from firebase to local memory
                 .addOnSuccessListener {
                     val editor = context.getSharedPreferences("FilmImages", Context.MODE_PRIVATE).edit()
-                    editor.putString(databaseRef, file.toURI().toString())
+                    editor.putString(databaseRef, file.toURI().toString()) // saving the image local address
                     editor.apply()
                     if(loadImageLocally(imageView, context)){
                         listener.onSuccess()
@@ -173,9 +174,9 @@ open class FilmItem(
         val savedImageUriString = sharedPreferences.getString(databaseRef, null)
         if (savedImageUriString != null) {
             val savedImageUri = Uri.parse(savedImageUriString)
-            Picasso.get().invalidate(savedImageUri)
+            Picasso.get().invalidate(savedImageUri) // invalidation ensures new reload if new image is selected
             Picasso.get().load(savedImageUri).into(imageView)
-            val layoutParams = imageView.layoutParams
+            val layoutParams = imageView.layoutParams // view layout is adjusted to the image height
             layoutParams.height = ViewGroup.LayoutParams.WRAP_CONTENT
             imageView.layoutParams = layoutParams
             imageView.visibility = VISIBLE
@@ -207,7 +208,7 @@ open class FilmItem(
         Picasso.get().load(localUri).into(object : com.squareup.picasso.Target {
             override fun onBitmapLoaded(bitmap: Bitmap?, from: Picasso.LoadedFrom?) {
                 bitmap?.let {
-                    val compressedImage = ImageLoader().compressImage(bitmap, 1024)
+                    val compressedImage = ImageLoader().compressImage(bitmap, 1024, context)
                     val imageRef = storageUserRef.child("film_images/${UUID.randomUUID()}.jpg")
                     imageRef.putBytes(compressedImage).addOnSuccessListener {
                         deleteImageFromStorage(storageUserRef, object : DatabaseSyncListener{
@@ -217,7 +218,7 @@ open class FilmItem(
                                     .addOnSuccessListener {
                                         imageLink = imageRef.name
                                         downloadAndLoadImageFromStorage(imageView, storageUserRef, context, listener)
-                                    }.addOnFailureListener(){ ex->
+                                    }.addOnFailureListener{ ex->
                                         listener.onFailure(ex)
                                     }
                             }
@@ -298,6 +299,12 @@ open class FilmItem(
         else{
             listener.onSuccess()
         }
+    }
+
+    fun smartSearch(target: String) : FilmItemSearched? {
+        val searchedItem = FilmItemSearched(target, this)
+        if(searchedItem.getMatchValue() > 0.0) return searchedItem
+        else return null
     }
 
     fun hasImage() : Boolean{
@@ -393,12 +400,6 @@ open class FilmItem(
     }
     fun sortComments(){
         comments.sort()
-    }
-
-    fun smartSearch(target: String) : FilmItemSearched? {
-        val searchedItem = FilmItemSearched(target, this)
-        if(searchedItem.getMatchValue() > 0.0) return searchedItem
-        else return null
     }
 
 }

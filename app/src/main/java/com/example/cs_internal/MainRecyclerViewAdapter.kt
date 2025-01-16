@@ -82,7 +82,10 @@ class MainRecyclerViewAdapter(
         if(filmItem.hasImage()){
             filmItem.loadImageIfExists(holder.imageView, context, storageUserRef, object : DatabaseSyncListener{
                 override fun onSuccess() {}
-                override fun onFailure(exception: Exception) {}
+                override fun onFailure(exception: Exception) {
+                    Toast.makeText(context, "Failed to some images", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(context, exception.message, Toast.LENGTH_LONG).show()
+                }
             })
         }
         else {

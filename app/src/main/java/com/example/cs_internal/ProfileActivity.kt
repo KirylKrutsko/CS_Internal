@@ -123,7 +123,7 @@ class ProfileActivity : AppCompatActivity() {
                                     val sharedPreferences = getSharedPreferences("profile_image", Context.MODE_PRIVATE)
                                     sharedPreferences.edit().putString(user.uid, croppedImageUri.toString()).apply()
 
-                                    val compressedImage = ImageLoader().compressImage(bitmap, 100)
+                                    val compressedImage = ImageLoader().compressImage(bitmap, 100, this@ProfileActivity)
                                     val imageRef = storageUserRef.child("profile_image")
                                     imageRef.putBytes(compressedImage).addOnFailureListener { ex->
                                         Toast.makeText(this@ProfileActivity, "Failed to save image to database", Toast.LENGTH_SHORT).show()

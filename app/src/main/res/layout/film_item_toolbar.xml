@@ -11,5 +11,5 @@
             android:background="@null"
             android:hint="Enter title"
             android:textColor="@android:color/white"
-            android:textSize="20sp" android:textAlignment="viewStart"/>
+            android:textSize="20sp" android:textAlignment="viewStart" android:maxLength="100"/>
 </androidx.appcompat.widget.Toolbar>

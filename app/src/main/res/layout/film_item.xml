@@ -25,23 +25,6 @@
             app:layout_constraintTop_toTopOf="@+id/markImage"
             app:layout_constraintEnd_toStartOf="@+id/markImage"
             android:textAlignment="textEnd" android:layout_marginEnd="10dp"/>
-    <TextView
-            android:text="film description..."
-            android:layout_width="0dp"
-            android:layout_height="wrap_content" android:id="@+id/film_description"
-            app:layout_constraintStart_toEndOf="@+id/imageView2"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/tagLayout"
-            android:layout_marginStart="10dp" android:layout_marginEnd="10dp"
-            app:layout_constraintBottom_toBottomOf="parent" app:layout_constraintVertical_bias="0.0"
-            android:layout_marginBottom="10dp" android:maxLines="12"/>
-    <ImageButton
-            android:layout_width="50dp"
-            android:layout_height="50dp" app:srcCompat="@drawable/baseline_more_vert_24"
-            android:id="@+id/optionsButton" app:tint="@color/white"
-            android:backgroundTint="@android:color/transparent"
-            app:layout_constraintTop_toTopOf="parent" app:layout_constraintEnd_toEndOf="parent"
-            android:scaleType="fitCenter" android:layout_marginTop="5dp"/>
     <com.example.cs_internal.CustomImageView
             android:layout_width="128dp"
             android:background="@drawable/main_theme_background"
@@ -52,14 +35,13 @@
             android:scaleType="fitStart" app:layout_constraintBottom_toBottomOf="parent"
             android:layout_marginBottom="20dp" app:layout_constraintVertical_bias="0.0"
     />
-    <LinearLayout
-            android:orientation="vertical"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:id="@+id/tagLayout"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@+id/imageView2" app:layout_constraintTop_toTopOf="@+id/imageView2"
-    />
+    <ImageButton
+            android:layout_width="50dp"
+            android:layout_height="50dp" app:srcCompat="@drawable/baseline_more_vert_24"
+            android:id="@+id/optionsButton" app:tint="@color/white"
+            android:backgroundTint="@android:color/transparent"
+            app:layout_constraintTop_toTopOf="parent" app:layout_constraintEnd_toEndOf="parent"
+            android:scaleType="fitCenter" android:layout_marginTop="5dp"/>
     <ImageView
             android:layout_width="wrap_content"
             android:layout_height="32dp" app:srcCompat="@drawable/emoji_5_svgrepo_com"
@@ -68,4 +50,22 @@
             app:layout_constraintTop_toTopOf="@+id/optionsButton"
             app:layout_constraintBottom_toBottomOf="@+id/optionsButton" android:layout_marginTop="4dp"
             android:layout_marginBottom="4dp"/>
+    <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:id="@+id/tagLayout"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/imageView2" app:layout_constraintTop_toTopOf="@+id/imageView2"
+    />
+    <TextView
+            android:text="film description..."
+            android:layout_width="0dp"
+            android:layout_height="wrap_content" android:id="@+id/film_description"
+            app:layout_constraintStart_toEndOf="@+id/imageView2"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/tagLayout"
+            android:layout_marginStart="10dp" android:layout_marginEnd="10dp"
+            app:layout_constraintBottom_toBottomOf="parent" app:layout_constraintVertical_bias="0.0"
+            android:layout_marginBottom="10dp" android:maxLines="12"/>
 </androidx.constraintlayout.widget.ConstraintLayout>

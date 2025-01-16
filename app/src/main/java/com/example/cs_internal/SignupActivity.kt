@@ -4,6 +4,7 @@ import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.text.method.PasswordTransformationMethod
+import android.util.Patterns
 import android.widget.*
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.userProfileChangeRequest
@@ -16,7 +17,6 @@ class SignupActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_signup)
 
-        val database : DatabaseReference = Firebase.database.reference
         val authenticator = FirebaseAuth.getInstance()
 
         val nameText : EditText = findViewById(R.id.editNameText)
@@ -29,8 +29,10 @@ class SignupActivity : AppCompatActivity() {
         seePasswordButton.setOnClickListener {
             if (passwordText.transformationMethod is PasswordTransformationMethod) {
                 passwordText.transformationMethod = null
+                seePasswordButton.setImageResource(R.drawable.eye_off_svgrepo_com)
             } else {
                 passwordText.transformationMethod = PasswordTransformationMethod.getInstance()
+                seePasswordButton.setImageResource(R.drawable.eye_svgrepo_com)
             }
             passwordText.setSelection(passwordText.text.length)
         }
@@ -45,10 +47,14 @@ class SignupActivity : AppCompatActivity() {
             val enteredPassword = passwordText.text.toString()
             val enteredEmail = emailText.text.toString()
 
-            // password validation
             if(enteredName.isBlank() || enteredPassword.isBlank() || enteredEmail.isBlank()){
                 Toast.makeText(this, "Please enter all name, email and password", Toast.LENGTH_SHORT).show()
             }
+            // email validation
+            else if(!Patterns.EMAIL_ADDRESS.matcher(enteredEmail).matches()){
+                Toast.makeText(this, "The entered email has a wrong format!", Toast.LENGTH_SHORT).show()
+            }
+            // password validation
             else if(enteredPassword.length < 6){
                 Toast.makeText(this, "Password must be at least 8 characters long!", Toast.LENGTH_SHORT).show()
             }

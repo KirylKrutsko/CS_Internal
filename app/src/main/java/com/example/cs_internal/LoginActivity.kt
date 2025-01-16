@@ -50,8 +50,10 @@ class LoginActivity : AppCompatActivity() {
         seePasswordButton.setOnClickListener {
             if (passwordText.transformationMethod is PasswordTransformationMethod) {
                 passwordText.transformationMethod = null
+                seePasswordButton.setImageResource(R.drawable.eye_off_svgrepo_com)
             } else {
                 passwordText.transformationMethod = PasswordTransformationMethod.getInstance()
+                seePasswordButton.setImageResource(R.drawable.eye_svgrepo_com)
             }
             passwordText.setSelection(passwordText.text.length)
         }

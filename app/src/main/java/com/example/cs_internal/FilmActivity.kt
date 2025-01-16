@@ -349,7 +349,6 @@ class FilmActivity : AppCompatActivity() {
         }
     }
 
-
     private fun setAllFields(){
         title.setText(filmItem.getTitle())
         if(filmItem.getRating() != null){
@@ -426,7 +425,6 @@ class FilmActivity : AppCompatActivity() {
             Toast.makeText(this@FilmActivity, e.message, Toast.LENGTH_LONG).show()
         }
     }
-
 
     private fun closeKeyboard(focusedView : View) {
         focusedView.clearFocus()
@@ -615,6 +613,7 @@ class FilmActivity : AppCompatActivity() {
     private fun setNewTagDialog(tagLayout: LinearLayout){
         val dialogView = LayoutInflater.from(this).inflate(R.layout.new_tag_dialog_layout, null)
         val tagInput : EditText = dialogView.findViewById(R.id.tagInput)
+        tagInput.maxWidth = 50
         val dialog = AlertDialog.Builder(this)
             .setView(dialogView)
             .setTitle("Create a new tag")
@@ -742,9 +741,10 @@ class FilmActivity : AppCompatActivity() {
         if (requestCode == PICK_IMAGE_REQUEST && resultCode == Activity.RESULT_OK && data != null) {
             val selectedImageUri : Uri? = data.data
             if(selectedImageUri != null){
-                filmItem.setImageByURI(selectedImageUri, imageView, this@FilmActivity, storageUserRef, databaseUserRef, object : DatabaseSyncListener{
+                filmItem.setImageByURI(selectedImageUri, imageView, this@FilmActivity,
+                    storageUserRef, databaseUserRef, object : DatabaseSyncListener{
                     override fun onSuccess() {
-                        if(!newFilm){
+                        if(!newFilm){ // new film is not yet in the list, so adapter is not notified
                             DataSingleton.adapters[clickedPage].notifyItemChanged(clickedPosition)
                         }
                         Toast.makeText(this@FilmActivity, "Image saved successfully!", Toast.LENGTH_SHORT).show()
@@ -767,18 +767,19 @@ class FilmActivity : AppCompatActivity() {
 
                     val ref = filmItem.getDatabaseRef()
                     filmItem = Gson().fromJson(json, FilmItem::class.java)
-                    filmItem.setReference(ref)
+                    filmItem.setReference(ref) // maintain previous database reference
                     clickedPage = filmItem.getType()
                     setAllFields()
 
                     for(tag in filmItem.getTags()){
-                        if(!DataSingleton.tags.contains(tag)){
+                        if(!DataSingleton.tags.contains(tag)){ // holds all tags of all films
                             DataSingleton.tags.add(tag)
                         }
                     }
 
-                } catch (e: IOException) {
-                    Toast.makeText(this, "Error parsing json file.\n${e.message}", Toast.LENGTH_LONG).show()
+                } catch (e: Exception) {
+                    Toast.makeText(this, "Error parsing json file.", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(this, e.message, Toast.LENGTH_LONG).show()
                 }
             }
         }
@@ -843,10 +844,12 @@ class FilmActivity : AppCompatActivity() {
             R.id.action_export -> {
                 val jsonString = GsonBuilder()
                     .excludeFieldsWithoutExposeAnnotation()
+                    // do not include database reference and image storage reference in json
                     .create()
                     .toJson(filmItem)
                 val downloadsDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)
                 val fileName = "${filmItem.getTitle().replace("\\W+".toRegex(), "_")}.json"
+                // replace all non-word characters with underscore
                 val file = File(downloadsDir, fileName)
                 try {
                     FileOutputStream(file).use { outputStream ->
@@ -854,13 +857,14 @@ class FilmActivity : AppCompatActivity() {
                     }
                     Toast.makeText(this, "Json file successfully saved to Downloads!", Toast.LENGTH_SHORT).show()
                 } catch (e: IOException) {
-                    Toast.makeText(this, "json file writing error\n${e.message}", Toast.LENGTH_LONG).show()
+                    Toast.makeText(this, "Json file writing error", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(this, e.message, Toast.LENGTH_LONG).show()
                 }
                 return true
             }
             R.id.action_import -> {
                 val intent = Intent(Intent.ACTION_GET_CONTENT).apply {
-                    type = "application/json"
+                    type = "application/json" // display only json files for picking
                     addCategory(Intent.CATEGORY_OPENABLE)
                 }
                 startActivityForResult(Intent.createChooser(intent, "Select a JSON file"), PICK_JSON_REQUEST)
@@ -889,7 +893,6 @@ class FilmActivity : AppCompatActivity() {
 
     override fun onDestroy() {
         if(toDelete){
-            //Toast.makeText(this@FilmActivity, "del", Toast.LENGTH_SHORT).show()
             filmItem.deleteFilm(databaseUserRef, storageUserRef, this@FilmActivity, object : DatabaseSyncListener{
                 override fun onSuccess() {}
                 override fun onFailure(exception: java.lang.Exception) {}
@@ -1013,7 +1016,6 @@ class FilmActivity : AppCompatActivity() {
         private fun getText() : String {
             return text.text.toString()
         }
-
         fun reset(prevSeason : Int, prevSeries : Int) {
             if( !filmItem.isASeries || (curSeason() == prevSeason && curSeries() == prevSeries)){
                 setup(text, false)
@@ -1093,6 +1095,5 @@ class FilmActivity : AppCompatActivity() {
         fun curSeries() : Int {
             return series.text.toString().toIntOrNull() ?: 0
         }
-
     }
 }

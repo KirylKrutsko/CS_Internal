@@ -33,7 +33,7 @@
     <ImageButton
             android:scaleType="fitCenter"
             android:layout_width="34dp"
-            android:layout_height="34dp" app:srcCompat="@drawable/outline_remove_red_eye_24"
+            android:layout_height="34dp" app:srcCompat="@drawable/eye_svgrepo_com"
             android:id="@+id/seePasswordButton"
             android:background="@android:color/transparent" app:layout_constraintEnd_toEndOf="@+id/editPasswordText"
             app:layout_constraintTop_toTopOf="@+id/editPasswordText" android:layout_marginTop="4dp"

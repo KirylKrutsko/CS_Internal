@@ -22,6 +22,7 @@ class ResetPasswordActivity : AppCompatActivity() {
         backButton.setOnClickListener(){
             val intentToLogin = Intent(this@ResetPasswordActivity, LoginActivity::class.java)
             startActivity(intentToLogin)
+            finish()
         }
         sendButton.setOnClickListener(){
             val enteredEmail : String = email.text.toString()

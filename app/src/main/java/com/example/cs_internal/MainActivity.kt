@@ -46,9 +46,6 @@ class MainActivity : AppCompatActivity(){
         storageUserRef = Firebase.storage.reference.child("users/${user.uid}")
 
         toolbar = findViewById(R.id.toolbar)
-        toolbar.title = user.displayName
-        ImageLoader().loadProfileImage(user.uid, storageUserRef, toolbar, this)
-        setSupportActionBar(toolbar)
 
         val viewPager : ViewPager = findViewById(R.id.viewPager)
         viewPager.offscreenPageLimit = 2
@@ -77,11 +74,6 @@ class MainActivity : AppCompatActivity(){
                 putExtra("new", true)
                 putExtra("pageNum", viewPager.currentItem)
             }
-            startActivity(intent)
-        }
-
-        toolbar.setNavigationOnClickListener {
-            val intent = Intent(this@MainActivity, ProfileActivity::class.java)
             startActivity(intent)
         }
 
@@ -211,6 +203,17 @@ class MainActivity : AppCompatActivity(){
         }
 
         return true
+    }
+
+    override fun onResume() {
+        toolbar.title = user.displayName
+        ImageLoader().loadProfileImage(user.uid, storageUserRef, toolbar, this)
+        setSupportActionBar(toolbar)
+        toolbar.setNavigationOnClickListener {
+            val intent = Intent(this@MainActivity, ProfileActivity::class.java)
+            startActivity(intent)
+        }
+        super.onResume()
     }
 
 }

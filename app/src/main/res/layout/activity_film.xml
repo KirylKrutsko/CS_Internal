@@ -174,18 +174,23 @@
                         android:inputType="number" android:backgroundTint="@android:color/transparent"
                         android:id="@+id/releaseYear"
                         android:textAlignment="textEnd" app:layout_constraintTop_toTopOf="parent"
-                        android:visibility="gone"
-                        app:layout_constraintStart_toStartOf="@+id/guideline"/>
+                        app:layout_constraintStart_toStartOf="@+id/guideline" android:visibility="gone"/>
+                <androidx.constraintlayout.widget.Barrier
+                        android:id="@+id/barrierForTags"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        app:barrierDirection="bottom"
+                        app:constraint_referenced_ids="releaseYear, filmRating"/>
                 <LinearLayout
                         android:orientation="vertical"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:id="@+id/tagLayout"
-                        app:layout_constraintTop_toBottomOf="@+id/filmRating"
+                        app:layout_constraintTop_toBottomOf="@+id/barrierForTags"
                         app:layout_constraintStart_toEndOf="@+id/imageView" app:layout_constraintEnd_toEndOf="parent"
                 />
                 <androidx.constraintlayout.widget.Barrier
-                        android:id="@+id/barrier"
+                        android:id="@+id/overviewBarrier"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         app:barrierDirection="bottom"
@@ -195,7 +200,7 @@
                         android:backgroundTint="@android:color/transparent"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content" android:id="@+id/filmDescription"
-                        app:layout_constraintTop_toBottomOf="@+id/barrier" app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toBottomOf="@+id/overviewBarrier" app:layout_constraintEnd_toEndOf="parent"
                         android:layout_marginStart="10dp"
                         app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintVertical_bias="0.0"

@@ -55,7 +55,7 @@ class SignupActivity : AppCompatActivity() {
                 Toast.makeText(this, "The entered email has a wrong format!", Toast.LENGTH_SHORT).show()
             }
             // password validation
-            else if(enteredPassword.length < 6){
+            else if(enteredPassword.length < 8){
                 Toast.makeText(this, "Password must be at least 8 characters long!", Toast.LENGTH_SHORT).show()
             }
             else if(!enteredPassword.any { it.isDigit() }){

@@ -36,12 +36,13 @@ class ProfileActivity : AppCompatActivity() {
     private lateinit var storageUserRef: StorageReference
     private lateinit var databaseUserRef: DatabaseReference
     private lateinit var profileImageButton: ImageButton
+    private lateinit var authenticator : FirebaseAuth
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_profile)
 
-        val authenticator = FirebaseAuth.getInstance()
+        authenticator = FirebaseAuth.getInstance()
         val curUser = authenticator.currentUser
 
         if(curUser == null){
@@ -66,6 +67,7 @@ class ProfileActivity : AppCompatActivity() {
         val changeUsernameButton : Button = findViewById(R.id.changeName)
         val changeImageButton : Button = findViewById(R.id.setProfileImage)
         val removeImageButton : Button = findViewById(R.id.removeProfileImage)
+        val deleteAccountButton : Button = findViewById(R.id.deleteAccountButton)
 
         usernameText.setText("Welcome,\n${user.displayName}")
         ImageLoader().loadProfileImage(user.uid, storageUserRef, profileImageButton, this)
@@ -91,6 +93,10 @@ class ProfileActivity : AppCompatActivity() {
             val sharedPreferences = getSharedPreferences("profile_image", Context.MODE_PRIVATE)
             sharedPreferences.edit().clear().apply()
             storageUserRef.child("profile_image").delete()
+        }
+
+        deleteAccountButton.setOnClickListener {
+            setDeleteDialog()
         }
 
         backButton.setOnClickListener {
@@ -142,6 +148,7 @@ class ProfileActivity : AppCompatActivity() {
             }
         }
     }
+
      private fun setUsernameDialog(){
          val view = EditText(this)
          view.setHint("Enter new username")
@@ -163,6 +170,32 @@ class ProfileActivity : AppCompatActivity() {
                          Toast.makeText(this@ProfileActivity, "Failed to update username", Toast.LENGTH_SHORT).show()
                          Toast.makeText(this@ProfileActivity, ex.message, Toast.LENGTH_LONG).show()
                      }
+                 }
+             }
+             .setNegativeButton("Cancel"){_,_->}
+             .create()
+         dialog.show()
+     }
+
+     private fun setDeleteDialog(){
+         val view = EditText(this)
+         view.setHint("Type \"delete account\" to confirm")
+         val dialog = AlertDialog.Builder(this)
+             .setTitle("All of your data will be deleted! This action cannot be restored!")
+             .setView(view)
+             .setPositiveButton("Delete"){ dialog, _ ->
+                 val enteredText = view.text.toString()
+                 if(enteredText == "delete account"){
+                     databaseUserRef.removeValue()
+                     storageUserRef.delete()
+                     authenticator.signOut()
+                     user.delete()
+                     val intentToLoginActivity = Intent(this@ProfileActivity, LoginActivity::class.java)
+                     startActivity(intentToLoginActivity)
+                     finish()
+                 }
+                 else{
+                     dialog.dismiss()
                  }
              }
              .setNegativeButton("Cancel"){_,_->}

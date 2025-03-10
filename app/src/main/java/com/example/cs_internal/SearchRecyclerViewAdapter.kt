@@ -93,23 +93,23 @@ class SearchRecyclerViewAdapter(
     fun filterByTarget(target: String){ // called when search query is modified
         currentFilmList = filterList(target, appliedTagFilter, appliedMarkFilter)
         notifyDataSetChanged()
+        appliedStringFilter = target
     }
     fun filterByTags(tagIndices: MutableSet<Int>){ // called when tags selection is modified
         currentFilmList = filterList(appliedStringFilter, tagIndices, appliedMarkFilter)
         notifyDataSetChanged()
+        appliedTagFilter.clear()
+        appliedTagFilter.addAll(tagIndices)
     }
     fun filterByMark(marks: MutableSet<Int>){ // called when mark selection is modified
         currentFilmList = filterList(appliedStringFilter, appliedTagFilter, marks)
         notifyDataSetChanged()
+        appliedMarkFilter.clear()
+        appliedMarkFilter.addAll(marks)
     }
 
     private fun filterList(target : String, tagIndices : MutableSet<Int>, marks : MutableSet<Int>)
     : MutableList<FilmItem> {
-        appliedStringFilter = target
-        appliedTagFilter.clear()
-        appliedTagFilter.addAll(tagIndices)
-        appliedMarkFilter.clear()
-        appliedMarkFilter.addAll(marks)
         val filteredList = allFilmList.mapNotNull { filmItem ->
             val markFound = marks.contains(filmItem.getMark())
             var tagFound = false

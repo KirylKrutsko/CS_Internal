@@ -27,8 +27,8 @@ class SortLinearLayout(context: Context, attributeSet: AttributeSet) : LinearLay
                 else{
                     selectItem(i)
                 }
-                var selectedItemsOrEmpty : MutableSet<Int> = mutableSetOf()
-                if(selectedItems.size != childCount) selectedItemsOrEmpty = selectedItems
+                val selectedItemsOrEmpty : MutableSet<Int> = mutableSetOf()
+                if(selectedItems.size != childCount) selectedItemsOrEmpty.addAll(selectedItems)
                 if(isTagLayout) adapter.filterByTags(selectedItemsOrEmpty)
                 else adapter.filterByMark(selectedItemsOrEmpty)
             }

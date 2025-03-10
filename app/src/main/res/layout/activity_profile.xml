@@ -64,6 +64,15 @@
             app:layout_constraintTop_toBottomOf="@+id/setProfileImage"
             app:icon="@drawable/remove_photo_svgrepo_com" app:iconTint="#FFFFFF" android:insetTop="0dp"
             android:insetBottom="0dp" />
+    <Button
+            android:text="Delete account"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content" android:id="@+id/deleteAccountButton"
+            app:layout_constraintStart_toStartOf="parent" app:layout_constraintEnd_toEndOf="parent"
+            android:backgroundTint="@android:color/transparent" android:textColor="#FFFFFF"
+            app:layout_constraintTop_toBottomOf="@+id/removeProfileImage"
+            app:icon="@drawable/user_delete_svgrepo_com" app:iconTint="#FFFFFF" android:insetTop="0dp"
+            android:insetBottom="0dp" />
     <ImageButton
             android:layout_width="wrap_content"
             android:layout_height="wrap_content" app:srcCompat="@drawable/outline_arrow_back_24"

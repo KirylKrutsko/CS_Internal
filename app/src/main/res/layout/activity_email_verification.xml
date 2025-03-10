@@ -8,12 +8,15 @@
         tools:context=".EmailVerificationActivity">
 
     <TextView
-            android:text="Your email is not verified yet. \nPlease verify it to use the app."
-            android:layout_width="wrap_content"
+            android:text="Your email is not verified yet. \nPress the button below and check your email box for verification instructions."
+            android:layout_width="0dp"
             android:layout_height="wrap_content" android:id="@+id/verifyText"
-            app:layout_constraintTop_toTopOf="parent" app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent" app:layout_constraintBottom_toBottomOf="parent"
-            android:layout_marginBottom="50dp" android:textColor="@color/white" android:textSize="18sp"/>
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            android:layout_marginBottom="50dp" android:textColor="@color/white" android:textSize="18sp"
+            app:layout_constraintEnd_toEndOf="@+id/verifyButton"
+            app:layout_constraintStart_toStartOf="@+id/verifyButton" android:layout_marginStart="-64dp"
+            android:layout_marginEnd="-64dp"/>
     <Button
             android:text="Send verification"
             android:layout_width="wrap_content"

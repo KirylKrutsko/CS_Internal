@@ -43,6 +43,7 @@ class EmailVerificationActivity : AppCompatActivity() {
                     ).show()
                     val intent = Intent(this@EmailVerificationActivity, MainActivity::class.java)
                     startActivity(intent)
+                    finish()
                 } else {
                     handler.postDelayed(this, 1000)
                 }

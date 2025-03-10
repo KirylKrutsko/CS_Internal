@@ -191,6 +191,8 @@ class FilmActivity : AppCompatActivity() {
                     }
                 }
             }
+
+            setPlayLayout()
         }
         else{
             if(clickedPage != 3){
@@ -379,6 +381,10 @@ class FilmActivity : AppCompatActivity() {
             }
         })
 
+        setPlayLayout()
+    }
+
+    private fun setPlayLayout(){
         if(clickedPage > 0){
             playLayout.visibility = VISIBLE
             val time = filmItem.getWatchTime()
@@ -881,12 +887,12 @@ class FilmActivity : AppCompatActivity() {
         }
     }
 
-    private fun startFailed(reason : Int){
-        if(reason == 0){
+    private fun startFailed(errorCode : Int){
+        if(errorCode == 0){
             Toast.makeText(this, "Failed to create a new item in database", Toast.LENGTH_SHORT).show()
         }
         else{
-            Toast.makeText(this, "Failed to start activity : $reason", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, "Failed to start activity : $errorCode", Toast.LENGTH_SHORT).show()
         }
         finish()
     }

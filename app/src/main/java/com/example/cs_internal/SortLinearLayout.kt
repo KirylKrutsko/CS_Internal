@@ -6,6 +6,7 @@ import android.view.View
 import android.widget.LinearLayout
 import android.widget.Toast
 
+// used to select marks and tags in search activity
 class SortLinearLayout(context: Context, attributeSet: AttributeSet) : LinearLayout(context, attributeSet){
 
     private val selectedItems : MutableSet<Int> = mutableSetOf()

@@ -31,6 +31,7 @@ class EmailVerificationActivity : AppCompatActivity() {
 
         }
 
+        // looper checks is email is verified each second
         val handler = Handler(Looper.getMainLooper())
         val emailVerificationChecker = object : Runnable {
             override fun run() {

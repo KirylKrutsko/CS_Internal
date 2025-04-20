@@ -3,6 +3,7 @@ package com.example.cs_internal
 import android.graphics.*
 import com.squareup.picasso.Transformation
 
+//used to crop image in circle for profile image
 class CircleTransformation() : Transformation {
     override fun transform(source: Bitmap): Bitmap? {
         if(source.config == null) return null

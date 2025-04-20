@@ -13,6 +13,7 @@ class CustomImageView : AppCompatImageView {
 
     constructor(context: Context, attrs: AttributeSet, defStyle: Int) : super(context, attrs, defStyle)
 
+    // manually adjusts the dimensions of ImageView when the source is reloaded
     override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
         val drawable: Drawable? = drawable
         if (drawable != null) {
@@ -21,7 +22,7 @@ class CustomImageView : AppCompatImageView {
             if (diw > 0) {
                 val dih = drawable.intrinsicHeight
                 val ratio = diw.toFloat() / dih.toFloat()
-                setMeasuredDimension(width, (width / ratio).toInt())
+                setMeasuredDimension(width, (width / ratio).toInt()) // adjust to ratio
             } else {
                 super.onMeasure(widthMeasureSpec, heightMeasureSpec)
             }

@@ -7,7 +7,7 @@ import androidx.recyclerview.widget.RecyclerView
 
 class CustomRecyclerView(context: Context, attributeSet: AttributeSet) : RecyclerView(context, attributeSet) {
 
-    private lateinit var scrollUpButton : ImageButton
+    private lateinit var scrollUpButton : ImageButton // button for quick scroll to the top
     private var buttonIsVisible = false
 
     fun setButton(button: ImageButton){
@@ -17,6 +17,7 @@ class CustomRecyclerView(context: Context, attributeSet: AttributeSet) : Recycle
         }
     }
     override fun onScrolled(dx: Int, dy: Int) {
+        // button appears when starts scrolling up
         super.onScrolled(dx, dy)
         if(dy < -10 && !buttonIsVisible){
             scrollUpButton.animate().translationY(-280f).setDuration(300).start()

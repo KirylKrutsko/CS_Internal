@@ -1,5 +1,6 @@
 package com.example.cs_internal
 
+//app-global storage
 object DataSingleton {
     const val TMDB_API_KEY = "fab125b41069e420843edff6259c5d60"
     val adapters : MutableList<MainRecyclerViewAdapter> = mutableListOf()
